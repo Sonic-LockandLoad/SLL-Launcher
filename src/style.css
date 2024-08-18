@@ -2,7 +2,7 @@
 body {
     color: #e0e0e0;
     background-color: #242424;
-    margin: auto;
+    margin: auto 25px;
     max-width: 100%;
     font-family: 'Chakra Petch', sans-serif;
     line-height: 1.7;
@@ -12,8 +12,34 @@ body {
 h1, h2, h3 {
     padding-top: 10px;
     line-height: 1.3;
-    text-align: center;
     font-weight: 600;
+}
+
+main {
+    float: none;
+    overflow: hidden;
+}
+
+footer {
+    position: absolute;
+    bottom: 0;
+    width: calc(100% - 50px);
+    padding-bottom: 15px;
+}
+
+.actions {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+#centre {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 table {
@@ -123,11 +149,6 @@ gpd {
     margin: 1px;
 }
 
-#content {
-    margin: auto;
-    max-width: 750px;
-}
-
 #separator {
     padding: 3px;
     border: none;
@@ -145,9 +166,8 @@ gpd {
 }
 #logo {
     display: block;
-    width: 400px;
-    padding: 15px;
-    margin: auto;
+    height: 70px;
+    float: right;
     filter: drop-shadow(1px 3px 5px #00000044);
 }
 

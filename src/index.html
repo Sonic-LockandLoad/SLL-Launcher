@@ -3,13 +3,39 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>What</title>
+        <title>Sonic: Lock & Load</title>
         <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <h1>Uhhhh</h1>
-        <button id="download-button">Meow?</button>
-        <div id="status"></div>
+        <a href="#" onclick="require('electron').shell.openExternal('https://sonic-lockandload.github.io')">
+            <img src="logo.png" id="logo"/>
+        </a>
+        <header>
+            <h1>Sonic: Lock &amp; Load Launcher</h1>
+            <hr id="separator">
+        </header>
+        <main>
+            <h2>404: information not found</h2>
+            <p>There is no information!</p>
+            <p>Page intentionally left blank.</p>
+        </main>
+        <footer>
+            <hr id="separator">
+            <div class="actions">
+                <div id="left">
+                    <!-- Placeholder info - populate in JS/TS later -->
+                     <button>Download nothing >:D</button>
+                </div>
+                <div id="centre">
+                    <button>Play Sonic: Lock &amp; Load</button>
+                </div>
+                <div id="right">
+                    <!-- Placeholder info - populate in JS/TS later -->
+                    <strong>Game version:</strong> v1.4.1 "Vibrant Horizons"<br>
+                    <strong>Engine version:</strong> g4.12.2
+                </div>
+            </div>
+        </footer>
         <script src="renderer.js"></script>
     </body>
 </html>
