@@ -1,19 +1,21 @@
 {
-  "name": "sll-launcher",
-  "version": "1.0.0",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
-  "devDependencies": {
-    "@types/electron": "^1.6.10",
-    "@types/node": "^22.4.0",
-    "axios": "^1.7.4",
-    "electron": "^31.4.0",
-    "typescript": "^5.5.4"
-  }
+    "name": "sll-launcher",
+    "version": "1.0.0",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "build": "tsc",
+        "start": "electron dist/main.js"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "@types/electron": "^1.6.10",
+        "@types/node": "^22.4.0",
+        "axios": "^1.7.4",
+        "electron": "^31.4.0",
+        "typescript": "^5.5.4"
+    }
 }
