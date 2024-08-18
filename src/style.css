@@ -1,0 +1,326 @@
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Space+Mono&display=swap');
+body {
+    color: #e0e0e0;
+    background-color: #242424;
+    margin: auto;
+    max-width: 100%;
+    font-family: 'Chakra Petch', sans-serif;
+    line-height: 1.7;
+    font-size: 18px;
+    margin-bottom: 45px;
+}
+h1, h2, h3 {
+    padding-top: 10px;
+    line-height: 1.3;
+    text-align: center;
+    font-weight: 600;
+}
+
+table {
+    width: 100%;
+    font-size: 18px;
+    border-radius: 12px;
+    background-color: #0000001a;
+    padding: 10px 0;
+    tr {
+        margin: 25px;
+        td {
+            padding: 5px 10px;
+        }
+    }
+}
+
+#style-rank-img {
+    width: 48px;
+    text-align: center;
+    align-items: center;
+}
+
+#stylebonus-kill {
+    color: #00fa00;
+}
+
+#stylebonus-positional {
+    color: #ffee00;
+}
+
+#stylebonus-special {
+    color: #60cdff;
+}
+
+button { 
+    font-family: 'Chakra Petch', sans-serif;
+    font-size: 18px;
+    border: none;
+    color: white;
+    background-color: #5e31db;
+    align-items: center;
+    text-decoration: none;
+    line-height: 1.2;
+    padding: 10px 15px;
+    transition: .2s;
+    border-radius: 0 6px 0;
+}
+button:hover {
+    background-color: #886ace;
+    border-radius: 6px;
+}
+button:active {
+    background-color: #43339b;
+}
+
+#download-link {
+    font-size: 28px;
+    line-height: 1.2;
+    font-weight: 500;
+    text-align: center;
+    color: #c4c4c4;
+}
+
+#download-subtitle {
+    line-height: 1.2;
+    text-align: center;
+}
+
+.framed {
+    max-width: 100%;
+    border: 5px solid;
+    border-image: linear-gradient(150deg, #4B0AFC 25%, #E503F5 50%, #4B0AFC 75%) 1;
+}
+
+a {
+    color: #f860a7;
+    transition: 0.1s;
+}
+a:hover  { color: #ffa9d1; }
+a:active { color: #c24881; }
+
+li {
+    padding-bottom: 6px;
+}
+
+kbd {
+    font-family: "Space Mono", monospace;
+    font-size: 90%;
+    border-radius: 5px;
+    padding: 0px 4px;
+    color: white;
+    border: 2px solid #020202;
+    background-color: #202020;
+    box-shadow: 0 2px 0 0 #020202;
+    margin: 1px;
+}
+gpd {
+    font-family: "Segoe UI", sans-serif;
+    font-weight: 600;
+    font-size: 90%;
+    border-radius: 50px;
+    padding: 0px 6px;
+    color: white;
+    border: 2px solid #020202;
+    background-color: #202020;
+    box-shadow: 0 2px 0 0 #020202;
+    margin: 1px;
+}
+
+#content {
+    margin: auto;
+    max-width: 750px;
+}
+
+#separator {
+    padding: 3px;
+    border: none;
+    background: linear-gradient(90deg, #333333 0%, #4B0AFC 20%, #E503F5 50%, #4B0AFC 80%, #333333 100%);
+    max-width: 100%;
+}
+
+#header {
+    color: white;
+    background: linear-gradient(130deg, #4B0AFC 0%, #046bca 30%, #E503F5 100%);
+    width: 100%;
+}
+#header a, #footer a {
+    color: #dddddd;
+}
+#logo {
+    display: block;
+    width: 400px;
+    padding: 15px;
+    margin: auto;
+    filter: drop-shadow(1px 3px 5px #00000044);
+}
+
+#footer {
+    text-align: center;
+    font-size: 80%;
+    color: white;
+    background: linear-gradient(130deg, #4B0AFC 0%, #046bca 30%, #E503F5 100%);
+    padding-bottom: 5px;
+}
+
+#links {
+    text-align: center; 
+    padding: auto 25px;
+}
+#links a { 
+    padding-right: 10px; 
+    font-weight: bold;
+}
+
+#box-links {
+    margin: auto;
+    display: flex;
+    column-gap: 10px;
+    justify-content: center;
+    font-size: 20px;
+}
+#box-links a {
+    color: white;
+    display: inline-block;
+    justify-content: center;
+    align-items: center;
+    text-decoration: none;
+    line-height: 1.2;
+    background-color: #5e31db;
+    padding: 10px 15px;
+    transition: .2s;
+    border-radius: 0 6px 0;
+}
+#box-links a:hover {
+    background-color: #886ace;
+    border-radius: 6px;
+}
+#box-links a:active {
+    background-color: #43339b;
+    border-radius: 12px;
+}
+
+#box-link {
+    color: white;
+    text-decoration: none;
+    text-align: center;
+    font-size: 115%;
+    line-height: 1.2;
+    display: block;
+    background-color: #6d31db;
+    padding: 20px;
+    margin: 10px;
+    box-shadow: 5px 5px 0px 0px #0000006b;
+    transition: .2s;
+    border-radius: 0 10px 0;
+}
+#box-link:hover {
+    background-color: #886ace;
+    box-shadow: 7px 7px 0px 0px #00000091;
+    border-radius: 10px;
+}
+#box-link:active {
+    background-color: #43339b;
+    box-shadow: 0px 0px 0px 0px #000000;
+    border-radius: 20px;
+}
+
+.releases {
+    max-width: 700px;
+    margin: auto;
+}
+#releasing-in {
+    color: #d67eff;
+    font-weight: 600;
+    text-align: center;
+}
+
+#header a {
+    color: #eeeeee;
+}
+
+#character {
+    height: 350px;
+    display: block;
+    float: right;
+    padding-left: 20px;
+}
+
+#doox {
+    width: 150px;
+}
+
+#redquoteblock {
+    background-color:#00000033;
+    padding: 5px 10px;
+    border-left: 2px solid #ff3e3e;
+}
+
+#greenquoteblock {
+    background-color:#00000033;
+    padding: 5px 10px;
+    border-left: 2px solid #2eb82e;
+}
+
+/* Mobile view */
+@media only screen and (max-width: 810px) {
+    #footer { font-size: 70%; }
+    #content { max-width: 92%; }
+    #links { text-align: center; }
+    #box-links { display: block; }
+    #box-links a { margin-bottom: 4px; }
+}
+
+@media only screen and (max-width: 435px) {
+    #logo { width: 90%; }
+}
+
+/* Firefox scroll bar */
+* {
+    scrollbar-color: #858bff #2b2b30;
+    scrollbar-width: thin;
+}
+
+/* WebKit scrollbar, for all other browsers */
+*::-webkit-scrollbar {
+    background-color: #2b2b30;
+    width: 8px;
+}
+*::-webkit-scrollbar-thumb        { background-color: #858bff; }
+*::-webkit-scrollbar-thumb:hover  { background-color: #6A6FD4; }
+*::-webkit-scrollbar-thumb:active { background-color: #363B8E; }
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+    body {
+        color: #333333;
+        background-color: #EEEEEE;
+    }
+    #header, #footer {
+        background-color: #EEEEF5;
+    }
+    #separator {
+        background: linear-gradient(90deg, #DDDDDD 0%, #013DB4 20%, #FA3295 50%, #013DB4 80%, #DDDDDD 100%);
+    }
+    kbd {
+        color: black;
+        border-color: #dfdfdf;
+        background-color: #fdfdfd;
+        box-shadow: 0 2px 0 0 #dfdfdf;
+    }
+    a        { color: #222266; }
+    a:hover  { color: #444466; }
+    a:active { color: #6666FF; }
+    hr {
+        background-color: #0000009c;
+    }
+    #download-link { color: #454545; }
+    table {
+        background-color: #FFFFFF;
+    }
+    #stylebonus-kill {
+        color: #00ad00;
+    }
+    #stylebonus-positional {
+        color: #dacd24;
+    }
+    #stylebonus-special {
+        color: #2face6;
+    }
+}
