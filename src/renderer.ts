@@ -17,3 +17,9 @@ function downloadNothing() {
     document.body.appendChild(nothingLink);
     nothingLink.click();
 }
+
+document.addEventListener('keydown', (event) => {
+    if (event.key === "Escape") {
+        ipcRenderer.send('close');
+    }
+});

@@ -18,6 +18,8 @@ function createWindow() {
     win.loadFile(path.join(__dirname, 'index.html'));
 }
 
+let mainWindow: BrowserWindow | null = null;
+
 app.whenReady().then(() => {
     createWindow();
 
@@ -36,6 +38,10 @@ app.on('window-all-closed', () => {
 
 ipcMain.on('message', (event, message) => {
     console.log(message);
+});
+
+ipcMain.on('close', (event) => {
+    app.quit();
 });
 
 ipcMain.on('download-file', async (event, filename, url) => {
