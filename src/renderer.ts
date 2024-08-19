@@ -1,4 +1,4 @@
-import { ipcRenderer } from "electron";
+import { ipcMain, ipcRenderer } from "electron";
 import { promises as fs } from 'fs';
 import path from 'path';
 
@@ -98,9 +98,39 @@ async function isValidIWAD(iwadPath: string) {
     }
 }
 
+async function checkForGameFiles() {
+    const gameFilesDir = await ipcRenderer.invoke('find-game-files');
+    const gameFilesStatus = document.getElementById('gamefiles');
+
+    if (gameFilesDir === -1) {
+        if (gameFilesStatus) {
+            gameFilesStatus.innerHTML = '🔴 Sonic: Lock &amp; Load needs to be downloaded';
+            summaryContents.push('Sonic: Lock &amp; Load needs to be downloaded. Please download it using the link provided: [placeholder]');
+        }
+    }
+    else if (gameFilesDir === -2) {
+        if (gameFilesStatus) {
+            gameFilesStatus.innerHTML = '🟡 Sonic: Lock &amp; Load folder is empty';
+            summaryContents.push('The Sonic: Lock &amp; Load folder is empty. Please download it using the link provided: [placeholder]. This will overwrite the existing folder.');
+        }
+    }
+    else if (gameFilesDir === -3) {
+        if (gameFilesStatus) {
+            gameFilesStatus.innerHTML = '🟡 Sonic: Lock & Load is installed but is not a Git repository';
+            summaryContents.push('The Sonic: Lock &amp; Load folder is not a Git repository. Did you download it manually instead of with <code>git clone</code>?');
+        }
+    }
+    else {
+        if (gameFilesStatus) {
+            gameFilesStatus.innerHTML = '🟢 Sonic: Lock &amp; Load is installed';
+        }
+    }
+}
+
 async function setStatus() {
     await checkForEngine();
     await checkForIWAD();
+    await checkForGameFiles();
     const summary = document.getElementById('status-summary');
     if (summary != null) {
         if (summaryContents.length > 0) {

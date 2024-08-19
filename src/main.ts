@@ -26,6 +26,26 @@ function createWindow() {
         return findFileCaseInsensitive('DOOM2.WAD') || findFileCaseInsensitive('freedoom2.wad');
     });
 
+    ipcMain.handle('find-game-files', (): string | number => {
+        const filePath = path.join(__dirname, 'Sonic-LockandLoad');
+        if (fs.existsSync(filePath)) {
+            if (fs.readdirSync(filePath).length === 0) {
+                console.log(`Directory ${filePath} is empty`);
+                return -2;
+            }
+            else {
+                if (!fs.existsSync(path.join(filePath, '.git'))) {
+                    return -3;
+                }
+                else {
+                    return filePath;
+                }
+            }
+        }
+
+        return -1;
+    });
+
     ipcMain.handle('get-freedoom-link', async (): Promise<string | null> => {
         const releaseUrl = "https://api.github.com/repos/freedoom/freedoom/releases/latest";
         
