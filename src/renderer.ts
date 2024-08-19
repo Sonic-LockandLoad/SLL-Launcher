@@ -110,13 +110,32 @@ async function setStatus() {
             }
         }
         else {
-            summary.innerHTML = 'Everything looks good!';
+            summary.innerHTML = 'Nothing to report. This area will fill with information if something goes wrong.';
         }
     }
 }
 
+async function resetStatus() {
+    summaryContents = [];
+    const gzdoomStatus = document.getElementById('gzdoom');
+    const iwadStatus = document.getElementById('iwad');
+    const gameFilesStatus = document.getElementById('gamefiles');
+    if (gzdoomStatus && iwadStatus && gameFilesStatus) {
+        gzdoomStatus.innerHTML = '⏱️ Pending GZDoom executable location';
+        iwadStatus.innerHTML = '⏱️ Pending DOOM II: Hell on Earth IWAD location';
+        gameFilesStatus.innerHTML = '⏱️ Pending Sonic: Lock &amp; Load game files installation';
+    }
+    console.clear();
+    await setStatus();
+}
+
 document.addEventListener('DOMContentLoaded', async (event) => {
     await setStatus();
+
+    const refreshButton = document.getElementById('status-refresh');
+    if (refreshButton) {
+        refreshButton.onclick = resetStatus;
+    }
 });
 
 document.addEventListener('keydown', (event) => {
