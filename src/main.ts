@@ -126,9 +126,10 @@ function findFileCaseInsensitive(filename: string): string | null {
 
     try {
         const files = fs.readdirSync(__dirname, { withFileTypes: true });
+        const file = files.find(file => file.name.toLowerCase() === filename.toLowerCase());
         const fileExists = files.some(file => file.name.toLowerCase() === filename.toLowerCase());
-        if (fileExists) {
-            return filename;
+        if (file && fileExists) {
+            return file.name;
         }
     }
     catch (err) {

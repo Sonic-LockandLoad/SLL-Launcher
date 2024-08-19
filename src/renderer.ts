@@ -1,5 +1,6 @@
 import { ipcRenderer } from "electron";
 import { promises as fs } from 'fs';
+import path from 'path';
 
 var summaryContents: string[] = [];
 
@@ -49,14 +50,14 @@ async function checkForIWAD() {
     const summary = document.getElementById('status-summary');
 
     if (iwadPath) {
-        console.log(`Found iwad at ${iwadPath}`);
+        console.log(`Found iwad at ${path.join(__dirname, iwadPath)}`);
         let wadName = "DOOM II: Hell on Earth";
         if (iwadPath.includes("freedoom")) {
             wadName = "Freedoom: Phase 2";
         }
         if (iwadStatus) {
-            if (await isValidIWAD(iwadPath)) {
-                iwadStatus.innerHTML = `🟢 ${wadName} is present`;
+            if (await isValidIWAD(path.join(__dirname, iwadPath))) {
+                iwadStatus.innerHTML = `🟢 ${wadName} is present and valid`;
             }
             else {
                 iwadStatus.innerHTML = `🟡 ${wadName} is present, but header is invalid`;
@@ -87,6 +88,8 @@ async function isValidIWAD(iwadPath: string) {
         await fileHandle.close();
 
         const header = buffer.toString('ascii');
+        console.log(header);
+
         return header === 'IWAD';
     }
     catch (error) {
@@ -100,9 +103,14 @@ async function setStatus() {
     await checkForIWAD();
     const summary = document.getElementById('status-summary');
     if (summary != null) {
-        for (const content of summaryContents) {
-            console.log(content);
-            summary.innerHTML += `<p>${content}</p>`;
+        if (summaryContents.length > 0) {
+            for (const content of summaryContents) {
+                console.log(content);
+                summary.innerHTML += `<p>${content}</p>`;
+            }
+        }
+        else {
+            summary.innerHTML = 'Everything looks good!';
         }
     }
 }
