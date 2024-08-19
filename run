@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# Clean up the existing dist folder
+rm -r dist
+
+# Compile the TypeScript into JavaScript
+tsc
+
+# Copy all the non-JS/TS files into the dist folder
+cp -r ./src/* ./dist --verbose
+
+# Run the launcher
+electron dist/main.js

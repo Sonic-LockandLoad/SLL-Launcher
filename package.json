@@ -3,7 +3,9 @@
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
-        "build": "tsc && copyfiles -u 1 src/**/* dist/",
+        "clean": "rm -r dist",
+        "build": "tsc",
+        "copy": "cp -r ./src/* ./dist --verbose",
         "start": "electron dist/main.js"
     },
     "keywords": [],
