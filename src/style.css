@@ -1,5 +1,9 @@
 @import "fonts.css";
 
+* {
+    user-select: none;
+    -webkit-user-select: none;
+}
 body {
     color: #e0e0e0;
     background-color: #242424;
@@ -77,7 +81,7 @@ table {
 
 button { 
     font-family: 'Chakra Petch', sans-serif;
-    font-size: 18px;
+    font-size: 22px;
     border: none;
     color: white;
     background-color: #5e31db;
