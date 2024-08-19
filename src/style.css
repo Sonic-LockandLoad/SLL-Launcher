@@ -22,11 +22,27 @@ h1, h2, h3 {
 
 main {
     float: none;
-    overflow: hidden;
+    margin: 120px 0;
 }
 
+header {
+    background-color: #242424;
+    position: fixed;
+    top: 0;
+    width: calc(100% - 50px);
+    z-index: 1;
+}
+#logo {
+    display: block;
+    height: 85px;
+    position: fixed;
+    top: 10px;
+    right: 25px;
+    z-index: 2;
+}
 footer {
-    position: absolute;
+    background-color: #242424;
+    position: fixed;
     bottom: 0;
     width: calc(100% - 50px);
     padding-bottom: 15px;
@@ -81,7 +97,7 @@ table {
 
 button { 
     font-family: 'Chakra Petch', sans-serif;
-    font-size: 22px;
+    font-size: 18px;
     border: none;
     color: white;
     background-color: #5e31db;
@@ -98,6 +114,10 @@ button:hover {
 }
 button:active {
     background-color: #43339b;
+}
+
+#centre button {
+    font-size: 22px;
 }
 
 #download-link {
@@ -168,12 +188,6 @@ gpd {
 }
 #header a, #footer a {
     color: #dddddd;
-}
-#logo {
-    display: block;
-    height: 70px;
-    float: right;
-    filter: drop-shadow(1px 3px 5px #00000044);
 }
 
 #footer {
@@ -317,7 +331,7 @@ gpd {
         color: #333333;
         background-color: #EEEEEE;
     }
-    #header, #footer {
+    header, footer {
         background-color: #EEEEF5;
     }
     #separator {

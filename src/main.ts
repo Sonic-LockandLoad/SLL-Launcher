@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
+import os from 'os';
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -16,6 +17,44 @@ function createWindow() {
     });
 
     win.loadFile(path.join(__dirname, 'index.html'));
+
+    ipcMain.handle('find-engine', () => {
+        return findExecutable('gzdoom');
+    });
+
+    ipcMain.handle('find-iwad', () => {
+        return findFileCaseInsensitive('DOOM2.WAD') || findFileCaseInsensitive('freedoom2.wad');
+    });
+
+    ipcMain.handle('get-freedoom-link', async (): Promise<string | null> => {
+        const releaseUrl = "https://api.github.com/repos/freedoom/freedoom/releases/latest";
+        
+        try {
+            const response = await axios.get(releaseUrl, {
+                headers: {
+                    "Accept": "application/vnd.github.v3+json"
+                }
+            });
+
+            const data = response.data;
+
+            if (data.assets && data.assets.length > 0) {
+                for (const asset of data.assets) {
+                    if (asset.name.startsWith("freedoom-") && asset.name.endsWith(".zip")) {
+                        const downloadUrl = await asset.browser_download_url;
+                        return downloadUrl;
+                    }
+                }
+            }
+
+            console.error("Can't find Freedoom download link");
+        }
+        catch (error) {
+            console.error(error);
+        }
+
+        return null;
+    });
 }
 
 let mainWindow: BrowserWindow | null = null;
@@ -68,3 +107,33 @@ ipcMain.on('download-file', async (event, filename, url) => {
         event.sender.send('download-error', `Error downloading ${filename}: ${error}`);
     }
 });
+
+function findExecutable(name: string): string | null {
+    const paths = process.env.PATH?.split(path.delimiter) || [];
+
+    for (const dir of paths) {
+        const fullPath = path.join(dir, name);
+        if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+            return fullPath;
+        }
+    }
+
+    return null;
+}
+
+function findFileCaseInsensitive(filename: string): string | null {
+    const cwd = process.cwd();
+
+    try {
+        const files = fs.readdirSync(__dirname, { withFileTypes: true });
+        const fileExists = files.some(file => file.name.toLowerCase() === filename.toLowerCase());
+        if (fileExists) {
+            return filename;
+        }
+    }
+    catch (err) {
+        return null;
+    }
+
+    return null;
+}

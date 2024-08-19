@@ -19,15 +19,13 @@
             <div id="status">
                 <h2>Status</h2>
                 <ul id="status-list">
-                    <li>🟢 GZDoom</li>
-                    <li>🔴 DOOM II: Hell on Earth IWAD</li>
-                    <li>🔴 Sonic: Lock &amp; Load game files</p>
+                    <li id="gzdoom">⏱️ Pending GZDoom executable location</li>
+                    <li id="iwad">⏱️ Pending DOOM II: Hell on Earth IWAD location</li>
+                    <li id="gamefiles">⏱️ Pending Sonic: Lock &amp; Load game files installation</p>
                 </ul>
-                <strong id="status-summary">
-                    Please copy DOOM II: Hell on Earth (DOOM2.WAD) into the <code>iwads</code>
-                    folder.<br>
-                    Not downloading Sonic: Lock &amp; Load because DOOM II is not available.
-                </strong>
+                <h3>Summary</h3>
+                <p id="status-summary"></p>
+                <button id="status-refresh">Refresh Status</button>
             </div>
             <div id="versions">
                 <h2>Versions</h2>
@@ -39,8 +37,7 @@
             <hr id="separator">
             <div class="actions">
                 <div id="left">
-                    <!-- Placeholder info - populate in JS/TS later -->
-                     <button onclick="downloadNothing()">Download nothing >:D</button>
+                     <button onclick="require('electron').shell.openPath(__dirname)">Open Executable Folder</button>
                 </div>
                 <div id="centre">
                     <button onclick="alert('Well, you can\'t yet.')">Play Sonic: Lock &amp; Load</button>
