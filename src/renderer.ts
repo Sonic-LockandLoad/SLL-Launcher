@@ -44,6 +44,28 @@ async function checkForEngine() {
     }
 }
 
+async function checkForGit() {
+    const gitPath = await ipcRenderer.invoke('find-git');
+    const gitStatus = document.getElementById('git');
+    const summary = document.getElementById('status-summary');
+
+    if (gitPath) {
+        console.log(`Found git at ${gitPath}`);
+        if (gitStatus) {
+            gitStatus.innerHTML = `🟢 Git found at ${gitPath}`;
+        }
+    }
+    else {
+        console.log('No git found');
+        if (gitStatus) {
+            gitStatus.innerHTML = '🔴 Git not found';
+        }
+        if (summary) {
+            summaryContents.push('Git was not found on your system on the PATH environment variable. Please download and install Git from <a href="#" onclick="require(\'electron\').shell.openExternal(\'https://git-scm.com/download\')">https://git-scm.com/</a>.');
+        }
+    }
+}
+
 async function checkForIWAD() {
     const iwadPath = await ipcRenderer.invoke('find-iwad');
     const iwadStatus = document.getElementById('iwad');
@@ -128,6 +150,7 @@ async function checkForGameFiles() {
 }
 
 async function setStatus() {
+    await checkForGit();
     await checkForEngine();
     await checkForIWAD();
     await checkForGameFiles();

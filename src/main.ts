@@ -18,6 +18,10 @@ function createWindow() {
 
     win.loadFile(path.join(__dirname, 'index.html'));
 
+    ipcMain.handle('find-git', () => {
+        return findExecutable('git');
+    });
+
     ipcMain.handle('find-engine', () => {
         return findExecutable('gzdoom');
     });
