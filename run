@@ -10,4 +10,4 @@ tsc
 cp -r ./src/* ./dist --verbose
 
 # Run the launcher
-electron dist/main.js
+npm start
