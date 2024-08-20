@@ -263,9 +263,9 @@ document.addEventListener('DOMContentLoaded', async (event) => {
 
     const playButton = document.getElementById('play-game') as HTMLButtonElement;
     if (playButton) {
-        playButton.onclick = () => {
+        playButton.onclick = async () => {
             if (canPlayGame) {
-                ipcRenderer.send('play-game');
+                await ipcRenderer.invoke('launch-game');
             }
         };
     }

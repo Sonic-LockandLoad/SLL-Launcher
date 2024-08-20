@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
 import simpleGit, { SimpleGit } from 'simple-git';
+import { spawn } from 'child_process';
 
 const git: SimpleGit = simpleGit();
 
@@ -177,8 +178,19 @@ function createWindow() {
         }
     });
 
-    ipcMain.handle('play-game', async () => {
-        // TODO
+    ipcMain.handle('launch-game', async () => {
+        const gzdoomExecutable = findExecutable('gzdoom');
+        const doom2iwad = findFileCaseInsensitive('doom2.wad') || findFileCaseInsensitive('freedoom2.wad');
+        const gameFile = findGamePK3() || findGameDir();
+
+        if (gzdoomExecutable && doom2iwad && gameFile) {
+            const execString = `${gzdoomExecutable} -iwad ${doom2iwad} -file ${gameFile}`;
+            console.log(`Running command \`${execString}\``);
+            spawn(gzdoomExecutable, ['-iwad', doom2iwad, '-file', `${gameFile}`]);
+        }
+        else {
+            alert("You should never see this. If you see this, something has gone horribly wrong.");
+        }
     });
 }
 
