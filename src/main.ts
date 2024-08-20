@@ -2,7 +2,6 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
-import os from 'os';
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -30,7 +29,7 @@ function createWindow() {
         return findFileCaseInsensitive('DOOM2.WAD') || findFileCaseInsensitive('freedoom2.wad');
     });
 
-    ipcMain.handle('find-game-files', (): string | number => {
+    function findGameDir(): string | number {
         const filePath = path.join(__dirname, 'Sonic-LockandLoad');
         if (fs.existsSync(filePath)) {
             if (fs.readdirSync(filePath).length === 0) {
@@ -48,6 +47,25 @@ function createWindow() {
         }
 
         return -1;
+    }
+
+    function findGamePK3(): string | null {
+        const filePath = path.join(__dirname, 'Sonic-LockandLoad.pk3');
+        if (fs.existsSync(filePath)) {
+            return filePath;
+        }
+
+        return null;
+    }
+
+    ipcMain.handle('find-game-files', (): string | number => {
+        const gameFile = findGamePK3();
+        const gameDir = findGameDir();
+
+        if (gameFile) {
+            return gameFile;
+        }
+        return gameDir;
     });
 
     ipcMain.handle('get-freedoom-link', async (): Promise<string | null> => {
@@ -79,6 +97,71 @@ function createWindow() {
 
         return null;
     });
+
+    ipcMain.handle('get-sll-link', async (): Promise<string | null> => {
+        const releaseUrl = "https://api.github.com/repos/Sonic-LockandLoad/Sonic-LockandLoad/releases/latest";
+
+        try {
+            const response = await axios.get(releaseUrl, {
+                headers: {
+                    "Accept": "application/vnd.github.v3+json"
+                }
+            });
+
+            const data = response.data;
+
+            if (data.assets && data.assets.length > 0) {
+                for (const asset of data.assets) {
+                    if (asset.name.startsWith("Sonic-LockandLoad-") && asset.name.endsWith(".pk3")) {
+                        const downloadUrl = await asset.browser_download_url;
+                        return downloadUrl;
+                    }
+                }
+            }
+
+            console.error("Can't find Sonic: Lock & Load download link");
+        }
+        catch (error) {
+            console.error(error);
+        }
+
+        return null;
+    });
+
+    ipcMain.handle('download-file', async (event, destination, url) => {
+        const filePath = path.join(__dirname, destination);
+        console.log(`Downloading ${url} to ${filePath}`);
+        try {
+            const writer = fs.createWriteStream(filePath);
+
+            const response = await axios({
+                url,
+                method: 'GET',
+                responseType: 'stream',
+            });
+
+            response.data.pipe(writer);
+
+            writer.on('finish', () => {
+                console.log(`Downloaded ${url} to ${filePath}`);
+                event.sender.send('file-downloaded', filePath);
+            });
+
+            writer.on('error', (error) => {
+                console.error(error);
+                fs.unlinkSync(filePath);
+                event.sender.send('file-error', error); 
+            });
+        }
+        catch (error) {
+            console.error(error);
+            event.sender.send('file-error', error);
+        }
+    });
+
+    ipcMain.handle('unzip-file', (event, file, directory) => {
+        console.log(`Unzipping ${file} to ${directory}`);
+    });
 }
 
 let mainWindow: BrowserWindow | null = null;
@@ -105,31 +188,6 @@ ipcMain.on('message', (event, message) => {
 
 ipcMain.on('close', (event) => {
     app.quit();
-});
-
-ipcMain.on('download-file', async (event, filename, url) => {
-    const filePath = path.join(__dirname, filename);
-    try {
-        const writer = fs.createWriteStream(filePath);
-        const response = await axios({
-            url,
-            method: 'GET',
-            responseType: 'stream',
-        });
-
-        response.data.pipe(writer);
-
-        writer.on('finish', () => {
-            event.sender.send('download-complete', `Finished downloading ${filename}`);
-        });
-
-        writer.on('error', (error) => {
-            event.sender.send('download-error', `Error downloading ${filename}: ${error}`);
-        });
-    }
-    catch (error) {
-        event.sender.send('download-error', `Error downloading ${filename}: ${error}`);
-    }
 });
 
 function findExecutable(name: string): string | null {
