@@ -115,6 +115,10 @@ button:hover {
 button:active {
     background-color: #43339b;
 }
+button:disabled {
+    background-color: #513c8b;
+    cursor: not-allowed;
+}
 
 #centre button {
     font-size: 22px;

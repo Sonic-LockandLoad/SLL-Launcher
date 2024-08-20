@@ -5,6 +5,7 @@ import path from 'path';
 var summaryContents: string[] = [];
 
 var isDownloading: boolean = false;
+var canPlayGame: boolean = false;
 
 ipcRenderer.on('download-complete', (event, message) => {
     console.log(message);
@@ -26,7 +27,7 @@ async function cloneGame(gitLink?: string) {
     }
 }
 
-async function checkForEngine() {
+async function checkForEngine(): Promise<boolean> {
     const gzdoomPath = await ipcRenderer.invoke('find-engine');
     const gzdoomStatus = document.getElementById('gzdoom');
     const summary = document.getElementById('status-summary');
@@ -36,6 +37,7 @@ async function checkForEngine() {
         if (gzdoomStatus) {
             gzdoomStatus.innerHTML = `✅ GZDoom found at ${gzdoomPath}`;
         }
+        return true;
     }
     else {
         console.log('No gzdoom found');
@@ -46,9 +48,11 @@ async function checkForEngine() {
             summaryContents.push('GZDoom was not found on your system on the PATH environment variable. Please install GZDoom yourself.');
         }
     }
+
+    return false;
 }
 
-async function checkForGit() {
+async function checkForGit(): Promise<boolean> {
     const gitPath = await ipcRenderer.invoke('find-git');
     const gitStatus = document.getElementById('git');
     const summary = document.getElementById('status-summary');
@@ -57,6 +61,7 @@ async function checkForGit() {
         console.log(`Found git at ${gitPath}`);
         if (gitStatus) {
             gitStatus.innerHTML = `✅ Git found at ${gitPath}`;
+            return true;
         }
     }
     else {
@@ -68,9 +73,11 @@ async function checkForGit() {
             summaryContents.push('Git was not found on your system on the PATH environment variable. Please download and install Git from <a href="#" onclick="require(\'electron\').shell.openExternal(\'https://git-scm.com/download\')">https://git-scm.com/</a>.');
         }
     }
+
+    return false;
 }
 
-async function checkForIWAD() {
+async function checkForIWAD(): Promise<boolean> {
     const iwadPath = await ipcRenderer.invoke('find-iwad');
     const iwadStatus = document.getElementById('iwad');
     const summary = document.getElementById('status-summary');
@@ -84,6 +91,7 @@ async function checkForIWAD() {
         if (iwadStatus) {
             if (await isValidIWAD(path.join(__dirname, iwadPath))) {
                 iwadStatus.innerHTML = `✅ ${wadName} is present and valid`;
+                return true;
             }
             else {
                 iwadStatus.innerHTML = `⚠️ ${wadName} is present, but header is invalid`;
@@ -104,9 +112,11 @@ async function checkForIWAD() {
                                   <a href="${freedoomDownloadLink}" download>Click here to get the latest version of Freedoom.</a>`);
         }
     }
+
+    return false;
 }
 
-async function isValidIWAD(iwadPath: string) {
+async function isValidIWAD(iwadPath: string): Promise<boolean> {
     try {
         const fileHandle = await fs.open(iwadPath, 'r');
         const buffer = Buffer.alloc(4);
@@ -124,7 +134,7 @@ async function isValidIWAD(iwadPath: string) {
     }
 }
 
-async function checkForGameFiles() {
+async function checkForGameFiles(): Promise<boolean> {
     const gameFilesDir = await ipcRenderer.invoke('find-game-files');
     const gameFilesStatus = document.getElementById('gamefiles');
 
@@ -132,7 +142,7 @@ async function checkForGameFiles() {
         if (gameFilesStatus) {
             gameFilesStatus.innerHTML = '⏳ Sonic: Lock &amp; Load is being downloaded, please wait...';
         }
-        return;
+        return false;
     }
 
     if (gameFilesDir === -1) {
@@ -156,8 +166,11 @@ async function checkForGameFiles() {
     else {
         if (gameFilesStatus) {
             gameFilesStatus.innerHTML = '✅ Sonic: Lock &amp; Load is installed';
+            return true;
         }
     }
+
+    return false;
 }
 
 async function updateSummary() {
@@ -176,10 +189,23 @@ async function updateSummary() {
 }
 
 async function setStatus() {
-    await checkForGit();
-    await checkForEngine();
-    await checkForIWAD();
-    await checkForGameFiles();
+    const gitStatus = await checkForGit();
+    const engineStatus = await checkForEngine();
+    const iwadStatus = await checkForIWAD();
+    const gameStatus = await checkForGameFiles();
+    const playButton = document.getElementById('play-game') as HTMLButtonElement;
+    if (gitStatus && engineStatus && iwadStatus && gameStatus) {
+        canPlayGame = true;
+        if (playButton) {
+            playButton.disabled = false;
+        }
+    }
+    else {
+        canPlayGame = false;
+        if (playButton) {
+            playButton.disabled = true;
+        }
+    }
     await updateSummary();
 }
 
@@ -232,6 +258,15 @@ document.addEventListener('DOMContentLoaded', async (event) => {
                 isDownloading = false;
                 await resetStatus();
             });
+        };
+    }
+
+    const playButton = document.getElementById('play-game') as HTMLButtonElement;
+    if (playButton) {
+        playButton.onclick = () => {
+            if (canPlayGame) {
+                ipcRenderer.send('play-game');
+            }
         };
     }
 });

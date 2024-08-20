@@ -176,6 +176,10 @@ function createWindow() {
             event.sender.send('clone-error', error);
         }
     });
+
+    ipcMain.handle('play-game', async () => {
+        // TODO
+    });
 }
 
 let mainWindow: BrowserWindow | null = null;
