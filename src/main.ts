@@ -2,6 +2,9 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import axios from 'axios';
+import simpleGit, { SimpleGit } from 'simple-git';
+
+const git: SimpleGit = simpleGit();
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -159,8 +162,19 @@ function createWindow() {
         }
     });
 
-    ipcMain.handle('unzip-file', (event, file, directory) => {
-        console.log(`Unzipping ${file} to ${directory}`);
+    ipcMain.handle('clone-repo', async (event, destination, url) => {
+        const filePath = path.join(__dirname, destination);
+        console.log(`Cloning ${url} to ${filePath}`);
+        try {
+            await git.clone(url, filePath).then(() => {
+                console.log(`Cloned ${url} to ${filePath}`);
+                event.sender.send('repo-cloned', filePath);
+            });
+        }
+        catch (error) {
+            console.error(error);
+            event.sender.send('clone-error', error);
+        }
     });
 }
 

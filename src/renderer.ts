@@ -1,10 +1,10 @@
 import { ipcRenderer } from 'electron';
 import { promises as fs } from 'fs';
 import path from 'path';
-import simpleGit from 'simple-git';
-const git = simpleGit();
 
 var summaryContents: string[] = [];
+
+var isDownloading: boolean = false;
 
 ipcRenderer.on('download-complete', (event, message) => {
     console.log(message);
@@ -20,14 +20,10 @@ async function downloadGame(downloadLink?: string) {
     }
 }
 
-function downloadNothing() {
-    const nothing = "This file contains nothing of value. Have a nice day! :D";
-    const nothingBlob = new Blob([nothing], { type: 'text/plain' });
-    const nothingLink = document.createElement('a');
-    nothingLink.href = URL.createObjectURL(nothingBlob);
-    nothingLink.download = 'nothing.txt';
-    document.body.appendChild(nothingLink);
-    nothingLink.click();
+async function cloneGame(gitLink?: string) {
+    if (gitLink) {
+        await ipcRenderer.invoke('clone-repo', "Sonic-LockandLoad", gitLink);
+    }
 }
 
 async function checkForEngine() {
@@ -132,6 +128,13 @@ async function checkForGameFiles() {
     const gameFilesDir = await ipcRenderer.invoke('find-game-files');
     const gameFilesStatus = document.getElementById('gamefiles');
 
+    if (isDownloading) {
+        if (gameFilesStatus) {
+            gameFilesStatus.innerHTML = '⏳ Sonic: Lock &amp; Load is being downloaded, please wait...';
+        }
+        return;
+    }
+
     if (gameFilesDir === -1) {
         if (gameFilesStatus) {
             gameFilesStatus.innerHTML = '⚠️ Sonic: Lock &amp; Load needs to be downloaded';
@@ -207,11 +210,26 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     }
 
     const downloadGameLink = document.getElementById('downloadGameFiles');
+    const downloadGameLink2 = document.getElementById('downloadGameFiles2');
     const downloadLink = await ipcRenderer.invoke('get-sll-link');
     if (downloadGameLink) {
         downloadGameLink.onclick = async () => {
+            isDownloading = true;
+            await resetStatus();
             await downloadGame(downloadLink);
             ipcRenderer.on("file-downloaded", async () => {
+                isDownloading = false;
+                await resetStatus();
+            });
+        };
+    }
+    if (downloadGameLink2) {
+        downloadGameLink2.onclick = async () => {
+            isDownloading = true;
+            await resetStatus();
+            await cloneGame("https://github.com/Sonic-LockandLoad/Sonic-LockandLoad.git");
+            ipcRenderer.on("repo-cloned", async () => {
+                isDownloading = false;
                 await resetStatus();
             });
         };
