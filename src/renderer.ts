@@ -253,11 +253,11 @@ document.addEventListener('DOMContentLoaded', async (event) => {
             await removeExistingGameFiles();
             await resetStatus();
             await downloadGame(downloadLink);
-            ipcRenderer.on("file-downloaded", async () => {
-                isDownloading = false;
-                await resetStatus();
-            });
         };
+        ipcRenderer.on("file-downloaded", async () => {
+            isDownloading = false;
+            await resetStatus();
+        });
     }
     if (downloadGameLink2) {
         downloadGameLink2.onclick = async () => {
@@ -265,11 +265,11 @@ document.addEventListener('DOMContentLoaded', async (event) => {
             await removeExistingGameFiles();
             await resetStatus();
             await cloneGame("https://github.com/Sonic-LockandLoad/Sonic-LockandLoad.git");
-            ipcRenderer.on("repo-cloned", async () => {
-                isDownloading = false;
-                await resetStatus();
-            });
         };
+        ipcRenderer.on("repo-cloned", async () => {
+            isDownloading = false;
+            await resetStatus();
+        });
     }
 
     const playButton = document.getElementById('play-game') as HTMLButtonElement;
