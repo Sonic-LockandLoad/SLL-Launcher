@@ -1,17 +1,18 @@
 {
     "name": "sll-launcher",
+    "description": "Sonic: Lock & Load Launcher",
+    "author": "Arsalan 'Aeria' Kazmi",
     "version": "1.0.0",
     "main": "dist/main.js",
+    "keywords": ["game", "doom", "sonic", "fan game", "electron"],
+    "license": "GPL-3.0-or-later",
     "scripts": {
         "clean": "rm -r dist",
-        "build": "tsc",
+        "compile": "tsc",
         "copy": "cp -r ./src/* ./dist --verbose",
-        "start": "electron dist/main.js"
+        "start": "electron dist/main.js",
+        "build": "electron-builder"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-    "description": "",
     "devDependencies": {
         "@types/electron": "^1.6.10",
         "@types/node": "^22.4.0",
