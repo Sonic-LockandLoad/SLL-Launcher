@@ -172,7 +172,7 @@ function createWindow() {
         const filePath = path.join(__dirname, destination);
         console.log(`Cloning ${url} to ${filePath}`);
         try {
-            await git.clone(url, filePath).then(() => {
+            await git.clone(url, filePath, ["--depth", "1"]).then(() => {
                 console.log(`Cloned ${url} to ${filePath}`);
                 event.sender.send('repo-cloned', filePath);
             });
