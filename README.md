@@ -24,12 +24,13 @@ GZDoom engine, the DOOM II IWAD, user configuration, etc.
 
 There is no installation candidate ready yet.
 
-You can install from source:
+You can run the launcher from source:
 
 ```sh
 git clone https://github.com/Sonic-LockandLoad/SLL-Launcher.git
 cd SLL-Launcher
 npm install
+npm start
 ```
 
 ## Licence
