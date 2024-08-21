@@ -2,7 +2,7 @@
     "name": "sll-launcher",
     "description": "Sonic: Lock & Load Launcher",
     "author": "Arsalan 'Aeria' Kazmi",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "main": "dist/main.js",
     "keywords": [
         "game",
