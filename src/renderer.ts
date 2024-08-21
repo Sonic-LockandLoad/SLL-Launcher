@@ -148,24 +148,25 @@ async function checkForGameFiles(): Promise<boolean> {
     if (gameFilesDir === -1) {
         if (gameFilesStatus) {
             gameFilesStatus.innerHTML = '⚠️ Sonic: Lock &amp; Load needs to be downloaded';
-            summaryContents.push('Sonic: Lock &amp; Load\'s game files are not present and needs to be downloaded. Please use the "Download Sonic: Lock &amp; Load" button under <strong>Manage Game</strong>.');
+            summaryContents.push('Sonic: Lock &amp; Load\'s game files are not present and needs to be downloaded.<br>Please use one of the "Download Sonic: Lock &amp; Load" options under <strong>Manage Game</strong> to download it.');
         }
     }
     else if (gameFilesDir === -2) {
         if (gameFilesStatus) {
             gameFilesStatus.innerHTML = '⚠️ Sonic: Lock &amp; Load folder is empty';
-            summaryContents.push('The Sonic: Lock &amp; Load folder is empty and needs to be redownloaded. Please use the "Download Sonic: Lock &amp; Load" button under <strong>Manage Game</strong>.');
+            summaryContents.push('The Sonic: Lock &amp; Load folder is empty and needs to be redownloaded.<br>Please use one of the "Download Sonic: Lock &amp; Load" options under <strong>Manage Game</strong> to redownload it.');
         }
     }
     else if (gameFilesDir === -3) {
         if (gameFilesStatus) {
-            gameFilesStatus.innerHTML = '⚠️ Sonic: Lock & Load is installed but is not a Git repository';
-            summaryContents.push('The Sonic: Lock &amp; Load folder is not a Git repository. Did you download it manually instead of with <code>git clone</code>?');
+            gameFilesStatus.innerHTML = `✅ Sonic: Lock & Load is installed at ${gameFilesDir} but is not a Git repository`;
+            summaryContents.push(`The Sonic: Lock &amp; Load folder at ${gameFilesDir} is not a Git repository.<br>Please check the folder yourself to see if it's really Sonic: Lock &amp; Load.`);
+            return true;
         }
     }
     else {
         if (gameFilesStatus) {
-            gameFilesStatus.innerHTML = '✅ Sonic: Lock &amp; Load is installed';
+            gameFilesStatus.innerHTML = `✅ Sonic: Lock &amp; Load is installed at ${gameFilesDir}`;
             return true;
         }
     }
@@ -190,9 +191,6 @@ async function updateSummary() {
                 console.log(content);
                 summary.innerHTML += `<p>${content}</p>`;
             }
-        }
-        else {
-            summary.innerHTML = 'Nothing to report. This area will fill with information if something goes wrong.';
         }
     }
 }
