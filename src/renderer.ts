@@ -227,10 +227,8 @@ async function setStatus() {
     }
 
     const gameVersionObj = document.getElementById('game-version');
-    const engineVersionObj = document.getElementById('engine-version');
-    if (gameVersionObj && engineVersionObj) {
+    if (gameVersionObj) {
         gameVersionObj.innerHTML = await ipcRenderer.invoke('get-game-version') || "Indeterminate";
-        engineVersionObj.innerHTML = await ipcRenderer.invoke('get-engine-version') || "Indeterminate";
     }
 
     await updateSummary();
