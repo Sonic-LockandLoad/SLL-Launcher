@@ -1,9 +1,10 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
-import fs from 'fs';
+import fs, { ReadStream } from 'fs';
 import axios from 'axios';
 import simpleGit, { SimpleGit } from 'simple-git';
 import { spawn } from 'child_process';
+import yauzl from 'yauzl';
 
 const git: SimpleGit = simpleGit();
 
@@ -37,24 +38,24 @@ function createWindow() {
         return findFileCaseInsensitive('DOOM2.WAD') || findFileCaseInsensitive('freedoom2.wad');
     });
 
-    function findGameDir(): string | number {
+    function findGameDir(): [string, number] {
         const filePath = path.join(__dirname, 'Sonic-LockandLoad');
         if (fs.existsSync(filePath)) {
             if (fs.readdirSync(filePath).length === 0) {
                 console.log(`Directory ${filePath} is empty`);
-                return -2;
+                return ["", -2];
             }
             else {
-                if (!fs.existsSync(path.join(filePath, '.git'))) {
-                    return -3;
+                if (!fs.existsSync(path.join(filePath, 'GAMEINFO.txt'))) {
+                    return [filePath, -3];
                 }
                 else {
-                    return filePath;
+                    return [filePath, 0];
                 }
             }
         }
 
-        return -1;
+        return ["", -1];
     }
 
     function findGamePK3(): string | null {
@@ -66,12 +67,12 @@ function createWindow() {
         return null;
     }
 
-    ipcMain.handle('find-game-files', (): string | number => {
+    ipcMain.handle('find-game-files', (): [string, number] => {
         const gameFile = findGamePK3();
         const gameDir = findGameDir();
 
         if (gameFile) {
-            return gameFile;
+            return [gameFile, 0];
         }
         return gameDir;
     });
@@ -196,7 +197,120 @@ function createWindow() {
             alert("You should never see this. If you see this, something has gone horribly wrong.");
         }
     });
+
+    async function getGameInfoFromPK3(): Promise<string | null> {
+        const gameFile = findGamePK3();
+        if (!gameFile) {
+            return null;
+        }
+
+        return new Promise<string | null>((resolve, reject) => {
+            yauzl.open(gameFile, { lazyEntries: true }, (err, zipfile) => {
+                if (err) {
+                    console.error(err);
+                    return reject(err);
+                }
+
+                let found = false;
+                let data = "";
+
+                zipfile.readEntry();
+
+                zipfile.on('entry', (entry) => {
+                    if (entry.fileName === "GAMEINFO.txt") {
+                        found = true;
+                        console.log(`Found GAMEINFO.txt in ${gameFile} at ${entry.fileName}`);
+
+                        zipfile.openReadStream(entry, (err, readStream) => {
+                            if (err) {
+                                console.error(err);
+                                return reject(err);
+                            }
+
+                            readStream.on('data', (chunk) => {
+                                data += chunk.toString();
+                            });
+
+                            readStream.on('end', () => {
+                                console.log(`Done reading ${gameFile} at ${entry.fileName}`);
+                                zipfile.close();
+                                resolve(data);
+                            });
+                        });
+                    } else {
+                        zipfile.readEntry();
+                    }
+                });
+
+                zipfile.on('end', () => {
+                    if (!found) {
+                        console.error(`GAMEINFO.txt not found in ${gameFile}`);
+                        resolve(null);
+                    }
+                });
+
+                zipfile.on('error', (err) => {
+                    console.error('Error while processing ZIP file:', err);
+                    reject(err);
+                });
+            });
+        });
+    }
+
+    async function getGameInfoFromFolder(): Promise<string | null> {
+        const gameFile = findGameDir();
+        if (!gameFile || gameFile[1] != 0) {
+            return null;
+        }
+
+        const gameInfo = fs.readFileSync(path.join(gameFile[0].toString(), 'GAMEINFO.txt'), 'utf-8')
+        console.log(gameInfo);
+
+        return new Promise<string | null>((resolve, reject) => {
+            resolve(gameInfo);
+        });
+    }
+
+    ipcMain.handle('get-game-version', async () => {
+        const isPK3 = findGamePK3();
+        const isDir = findGameDir();
+        const game = isPK3 || isDir;
+
+        if (game && isPK3) {
+            const gameInfo: string = await getGameInfoFromPK3() || "";
+            const version = await parseVersionFromGameInfo(gameInfo);
+            if (version) return version;
+        }
+        if (game && isDir) {
+            const gameInfo: string = await getGameInfoFromFolder() || "";
+            const version = await parseVersionFromGameInfo(gameInfo);
+            if (version) return version;
+        }
+        return null;
+    });
+
+    ipcMain.handle('get-engine-version', (event) => {
+        return "g4.11.3"; // probably
+    });
 }
+
+
+    async function parseVersionFromGameInfo(gameInfo: string): Promise<string | null> {
+        if (gameInfo.length > 0) {
+            // Extract the line that starts with "StartupTitle"
+            const title = gameInfo.split('\n').find(line => line.startsWith('StartupTitle'));
+            console.log("Found title: " + title);
+            if (title) {
+                const version = title.split('Sonic: Lock & Load ')[1].replace(/\\/g, '').slice(0, -2);
+                if (version) {
+                    console.log("Found version: " + version);
+                    return version;
+                }
+            }
+        }
+
+        return null;
+    }
 
 let mainWindow: BrowserWindow | null = null;
 

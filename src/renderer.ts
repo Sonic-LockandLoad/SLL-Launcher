@@ -135,8 +135,11 @@ async function isValidIWAD(iwadPath: string): Promise<boolean> {
 }
 
 async function checkForGameFiles(): Promise<boolean> {
-    const gameFilesDir = await ipcRenderer.invoke('find-game-files');
+    const gameFiles = await ipcRenderer.invoke('find-game-files');
     const gameFilesStatus = document.getElementById('gamefiles');
+
+    const gameFilesDir = gameFiles[0];
+    const gameFilesCode = gameFiles[1];
 
     if (isDownloading) {
         if (gameFilesStatus) {
@@ -145,22 +148,22 @@ async function checkForGameFiles(): Promise<boolean> {
         return false;
     }
 
-    if (gameFilesDir === -1) {
+    if (gameFilesCode === -1) {
         if (gameFilesStatus) {
             gameFilesStatus.innerHTML = '⚠️ Sonic: Lock &amp; Load needs to be downloaded';
             summaryContents.push('Sonic: Lock &amp; Load\'s game files are not present and needs to be downloaded.<br>Please use one of the "Download Sonic: Lock &amp; Load" options under <strong>Manage Game</strong> to download it.');
         }
     }
-    else if (gameFilesDir === -2) {
+    else if (gameFilesCode === -2) {
         if (gameFilesStatus) {
             gameFilesStatus.innerHTML = '⚠️ Sonic: Lock &amp; Load folder is empty';
             summaryContents.push('The Sonic: Lock &amp; Load folder is empty and needs to be redownloaded.<br>Please use one of the "Download Sonic: Lock &amp; Load" options under <strong>Manage Game</strong> to redownload it.');
         }
     }
-    else if (gameFilesDir === -3) {
+    else if (gameFilesCode === -3) {
         if (gameFilesStatus) {
-            gameFilesStatus.innerHTML = `✅ Sonic: Lock & Load is installed at ${gameFilesDir} but is not a Git repository`;
-            summaryContents.push(`The Sonic: Lock &amp; Load folder at ${gameFilesDir} is not a Git repository.<br>Please check the folder yourself to see if it's really Sonic: Lock &amp; Load.`);
+            gameFilesStatus.innerHTML = `⚠️ Sonic: Lock & Load folder present at ${gameFilesDir} but does not include GAMEINFO`;
+            summaryContents.push(`The Sonic: Lock &amp; Load folder at ${gameFilesDir} does not include <code>GAMEINFO.txt</code>.<br>Is this really a version of Sonic: Lock &amp; Load? You may try to redownload the game using one of the "Download Sonic: Lock &amp; Load" options under <strong>Manage Game</strong>.`);
             return true;
         }
     }
@@ -175,11 +178,13 @@ async function checkForGameFiles(): Promise<boolean> {
 }
 
 async function removeExistingGameFiles() {
-    const gameFilesDir = await ipcRenderer.invoke('find-game-files');
+    const gameFiles: [string, number] = await ipcRenderer.invoke('find-game-files');
+    const gameFilesDir = gameFiles[0];
+    const gameFilesCode = gameFiles[1];
     await ipcRenderer.invoke('log', `Game files are ${gameFilesDir}`);
-    if (gameFilesDir !== -1) {
+    if (gameFilesCode !== -1) {
         console.log(`Removing ${gameFilesDir}`);
-        await fs.unlink(gameFilesDir);
+        await fs.rm(gameFilesDir, { recursive: true, force: true });
     }
 }
 
@@ -219,6 +224,13 @@ async function setStatus() {
     if (downloadButton1 && downloadButton2) {
         downloadButton1.disabled = isDownloading;
         downloadButton2.disabled = isDownloading;
+    }
+
+    const gameVersionObj = document.getElementById('game-version');
+    const engineVersionObj = document.getElementById('engine-version');
+    if (gameVersionObj && engineVersionObj) {
+        gameVersionObj.innerHTML = await ipcRenderer.invoke('get-game-version') || "Indeterminate";
+        engineVersionObj.innerHTML = await ipcRenderer.invoke('get-engine-version') || "Indeterminate";
     }
 
     await updateSummary();
