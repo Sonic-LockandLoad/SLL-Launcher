@@ -21,6 +21,10 @@ function createWindow() {
 
     win.loadFile(path.join(__dirname, 'index.html'));
 
+    ipcMain.handle('log', (event, message) => {
+        console.log(message);
+    });
+
     ipcMain.handle('find-git', () => {
         return findExecutable('git');
     });

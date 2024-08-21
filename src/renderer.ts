@@ -173,6 +173,15 @@ async function checkForGameFiles(): Promise<boolean> {
     return false;
 }
 
+async function removeExistingGameFiles() {
+    const gameFilesDir = await ipcRenderer.invoke('find-game-files');
+    await ipcRenderer.invoke('log', `Game files are ${gameFilesDir}`);
+    if (gameFilesDir !== -1) {
+        console.log(`Removing ${gameFilesDir}`);
+        await fs.unlink(gameFilesDir);
+    }
+}
+
 async function updateSummary() {
     const summary = document.getElementById('status-summary');
     if (summary != null) {
@@ -241,6 +250,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     if (downloadGameLink) {
         downloadGameLink.onclick = async () => {
             isDownloading = true;
+            await removeExistingGameFiles();
             await resetStatus();
             await downloadGame(downloadLink);
             ipcRenderer.on("file-downloaded", async () => {
@@ -252,6 +262,7 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     if (downloadGameLink2) {
         downloadGameLink2.onclick = async () => {
             isDownloading = true;
+            await removeExistingGameFiles();
             await resetStatus();
             await cloneGame("https://github.com/Sonic-LockandLoad/Sonic-LockandLoad.git");
             ipcRenderer.on("repo-cloned", async () => {
