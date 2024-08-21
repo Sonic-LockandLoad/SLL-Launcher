@@ -361,11 +361,14 @@ ipcMain.on('close', (event) => {
 
 function findExecutable(name: string): string | null {
     const paths = process.env.PATH?.split(path.delimiter) || [];
+    const extensions = process.platform === 'win32' ? ['.exe', '.cmd', '.bat'] : [];
 
     for (const dir of paths) {
-        const fullPath = path.join(dir, name);
-        if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
-            return fullPath;
+        for (const ext of extensions) {
+            const fullPath = path.join(dir, name + ext);
+            if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+                return fullPath;
+            }
         }
     }
 
