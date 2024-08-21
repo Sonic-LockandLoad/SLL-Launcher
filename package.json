@@ -13,9 +13,9 @@
     ],
     "license": "GPL-3.0-or-later",
     "scripts": {
-        "clean": "rimraf dist || true",
+        "clean": "rimraf out dist || true",
         "compile": "tsc",
-        "copy": "copyfiles src/**/* dist",
+        "copy": "copyfiles --verbose src/**/* dist",
         "start": "electron dist/main.js",
         "build": "electron-builder"
     },

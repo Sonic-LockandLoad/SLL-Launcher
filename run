@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Clean up the existing dist folder
-rm -rf dist
+rm -rf dist out
 
 # Compile the TypeScript into JavaScript
 tsc
