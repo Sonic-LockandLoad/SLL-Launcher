@@ -48,9 +48,9 @@
         "linux": {
             "target": [
                 "AppImage",
-                "deb",
-                "rpm"
-            ]
+                "flatpak"
+            ],
+            "category": "Game"
         },
         "mac": {
             "target": "dmg"
