@@ -254,6 +254,31 @@ async function resetStatus() {
     await setStatus();
 }
 
+async function confirmOverwrite(): Promise<boolean> {
+    const gameFiles = await ipcRenderer.invoke('find-game-files');
+    const gameFilesDir = gameFiles[0];
+    const gameFilesCode = gameFiles[1];
+    
+    // Game files exist
+    if (gameFilesCode === 0) {
+        let proceed: number = await ipcRenderer.invoke(
+            'confirm-overwrite',
+            `Sonic: Lock & Load already exists at ${gameFilesDir}. Downloading Sonic: Lock & Load will overwrite the existing files. Are you sure you want to continue?`,
+            ['Yes, delete files and redownload', 'No, cancel']
+        );
+        if (proceed === 0) {
+            return true;
+        }
+    }
+    // Game files do not exist or are invalid
+    else {
+        return true;
+    }
+
+    // In the event valid game files were found but the user cancelled
+    return false;
+}
+
 document.addEventListener('DOMContentLoaded', async (event) => {
     await resetStatus();
 
@@ -267,6 +292,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     const downloadLink = await ipcRenderer.invoke('get-sll-link');
     if (downloadGameLink) {
         downloadGameLink.onclick = async () => {
+            const overwrite: boolean = await confirmOverwrite();
+            if (!overwrite) {
+                return;
+            }
             isDownloading = true;
             await removeExistingGameFiles();
             await resetStatus();
@@ -279,6 +308,10 @@ document.addEventListener('DOMContentLoaded', async (event) => {
     }
     if (downloadGameLink2) {
         downloadGameLink2.onclick = async () => {
+            const overwrite: boolean = await confirmOverwrite();
+            if (!overwrite) {
+                return;
+            }
             isDownloading = true;
             await removeExistingGameFiles();
             await resetStatus();

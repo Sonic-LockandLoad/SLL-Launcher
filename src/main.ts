@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, dialog, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import fs, { ReadStream } from 'fs';
 import axios from 'axios';
@@ -24,6 +24,15 @@ function createWindow() {
 
     ipcMain.handle('log', (event, message) => {
         console.log(message);
+    });
+
+    ipcMain.handle('confirm-overwrite', async (event, message, labels) => {
+        return dialog.showMessageBoxSync({
+            type: 'warning',
+            title: 'Files Already Exist',
+            message: message,
+            buttons: labels,
+        });
     });
 
     ipcMain.handle('find-git', () => {
