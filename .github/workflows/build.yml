@@ -28,7 +28,13 @@ jobs:
       run: npm install
 
     - name: Clean previous build
-      run: npm run clean
+      run: |
+        if [ -d "out" ]; then
+          rm -rf out
+        fi
+        if [ -d "dist" ]; then
+          rm -rf dist
+        fi
 
     - name: Compile TypeScript
       run: npm run compile
