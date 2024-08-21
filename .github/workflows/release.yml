@@ -12,22 +12,22 @@ jobs:
             GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         steps:
             - name: Checkout code
-              uses: actions/checkout@v3
+              uses: actions/checkout@v4
 
             - name: Download Linux artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: electron-build-ubuntu-latest
                   path: out/linux
 
             - name: Download macOS artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: electron-build-macos-latest
                   path: out/macos
 
             - name: Download Windows artifacts
-              uses: actions/download-artifact@v3
+              uses: actions/download-artifact@v4
               with:
                   name: electron-build-windows-latest
                   path: out/windows
@@ -40,6 +40,7 @@ jobs:
                   release_name: Release ${{ github.ref }}
                   draft: false
                   prerelease: false
+                  token: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Upload Linux release assets
               uses: actions/upload-release-asset@v1
