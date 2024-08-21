@@ -1,6 +1,8 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, shell } from 'electron';
 import { promises as fs } from 'fs';
 import path from 'path';
+
+const appDataDir = ipcRenderer.invoke('get-root-path');
 
 var summaryContents: string[] = [];
 
@@ -83,13 +85,13 @@ async function checkForIWAD(): Promise<boolean> {
     const summary = document.getElementById('status-summary');
 
     if (iwadPath) {
-        console.log(`Found iwad at ${path.join(__dirname, iwadPath)}`);
+        console.log(`Found iwad at ${path.join(await appDataDir, iwadPath)}`);
         let wadName = "DOOM II: Hell on Earth";
         if (iwadPath.includes("freedoom")) {
             wadName = "Freedoom: Phase 2";
         }
         if (iwadStatus) {
-            if (await isValidIWAD(path.join(__dirname, iwadPath))) {
+            if (await isValidIWAD(path.join(await appDataDir, iwadPath))) {
                 iwadStatus.innerHTML = `✅ ${wadName} is present and valid`;
                 return true;
             }
@@ -105,10 +107,10 @@ async function checkForIWAD(): Promise<boolean> {
         }
         if (summary) {
             const freedoomDownloadLink = await ipcRenderer.invoke('get-freedoom-link');
-            const executableDir = __dirname;
-            console.log(`Executable dir: ${executableDir}`);
-            summaryContents.push(`DOOM II/Freedoom: Phase 2 was not found next to the Sonic: Lock &amp; Load Launcher.<br>
-                                  Please place your copy of DOOM2.WAD or freedoom2.wad in ${executableDir}. Click the "Open Executable Directory" button below to open this directory.<br>
+            const configDir = await appDataDir;
+            const configDirShort = configDir.replace(/\/home\/[^\/]+/, '~');
+            console.log(`Executable dir: ${configDir}`);
+            summaryContents.push(`DOOM II/Freedoom: Phase 2 was not found in the data folder. Please place your copy of <code>DOOM2.WAD</code> or <code>freedoom2.wad</code> in <code>${configDirShort}</code>. Click the "Open Data Folder" button below to open this folder.<br>
                                   <a href="${freedoomDownloadLink}" download>Click here to get the latest version of Freedoom.</a>`);
         }
     }
@@ -141,6 +143,8 @@ async function checkForGameFiles(): Promise<boolean> {
     const gameFilesDir = gameFiles[0];
     const gameFilesCode = gameFiles[1];
 
+    const gameFilesDirShort = gameFilesDir.replace(/\/home\/[^\/]+/, '~');
+
     if (isDownloading) {
         if (gameFilesStatus) {
             gameFilesStatus.innerHTML = '⏳ Sonic: Lock &amp; Load is being downloaded, please wait...';
@@ -162,14 +166,14 @@ async function checkForGameFiles(): Promise<boolean> {
     }
     else if (gameFilesCode === -3) {
         if (gameFilesStatus) {
-            gameFilesStatus.innerHTML = `⚠️ Sonic: Lock & Load folder present at ${gameFilesDir} but does not include GAMEINFO`;
-            summaryContents.push(`The Sonic: Lock &amp; Load folder at ${gameFilesDir} does not include <code>GAMEINFO.txt</code>.<br>Is this really a version of Sonic: Lock &amp; Load? You may try to redownload the game using one of the "Download Sonic: Lock &amp; Load" options under <strong>Manage Game</strong>.`);
+            gameFilesStatus.innerHTML = `⚠️ Sonic: Lock & Load folder present at ${gameFilesDirShort} but does not include GAMEINFO`;
+            summaryContents.push(`The Sonic: Lock &amp; Load folder at ${gameFilesDirShort} does not include <code>GAMEINFO.txt</code>.<br>Is this really a version of Sonic: Lock &amp; Load? You may try to redownload the game using one of the "Download Sonic: Lock &amp; Load" options under <strong>Manage Game</strong>.`);
             return true;
         }
     }
     else {
         if (gameFilesStatus) {
-            gameFilesStatus.innerHTML = `✅ Sonic: Lock &amp; Load is installed at ${gameFilesDir}`;
+            gameFilesStatus.innerHTML = `✅ Sonic: Lock &amp; Load is installed at ${gameFilesDirShort}`;
             return true;
         }
     }
@@ -211,6 +215,14 @@ async function setStatus() {
     }
     else {
         canPlayGame = false;
+    }
+
+    const openFolderButton = document.getElementById('open-folder') as HTMLButtonElement;
+
+    if (openFolderButton) {
+        openFolderButton.onclick = async () => {
+            await shell.openPath(await appDataDir);
+        }
     }
 
     const playButton = document.getElementById('play-game') as HTMLButtonElement;

@@ -8,6 +8,8 @@ import yauzl from 'yauzl';
 
 const git: SimpleGit = simpleGit();
 
+const appDataDir = path.join(app.getPath('home'), 'SLL_Launcher');
+
 function createWindow() {
     const win = new BrowserWindow({
         width: 1200,
@@ -25,6 +27,15 @@ function createWindow() {
     ipcMain.handle('log', (event, message) => {
         console.log(message);
     });
+
+    ipcMain.handle('get-root-path', () => {
+        return appDataDir;
+    });
+
+    if (!fs.existsSync(appDataDir)) {
+        fs.mkdirSync(appDataDir);
+        console.log(`Config directory created at ${appDataDir}`);
+    }
 
     ipcMain.handle('confirm-overwrite', async (event, message, labels) => {
         return dialog.showMessageBoxSync({
@@ -48,7 +59,7 @@ function createWindow() {
     });
 
     function findGameDir(): [string, number] {
-        const filePath = path.join(__dirname, 'Sonic-LockandLoad');
+        const filePath = path.join(appDataDir, 'Sonic-LockandLoad');
         if (fs.existsSync(filePath)) {
             if (fs.readdirSync(filePath).length === 0) {
                 console.log(`Directory ${filePath} is empty`);
@@ -67,10 +78,10 @@ function createWindow() {
         return ["", -1];
     }
 
-    function findGamePK3(): string | null {
-        const filePath = path.join(__dirname, 'Sonic-LockandLoad.pk3');
+    function findGamePK3(): [string, number] | null {
+        const filePath = path.join(appDataDir, 'Sonic-LockandLoad.pk3');
         if (fs.existsSync(filePath)) {
-            return filePath;
+            return [filePath, 0];
         }
 
         return null;
@@ -81,7 +92,7 @@ function createWindow() {
         const gameDir = findGameDir();
 
         if (gameFile) {
-            return [gameFile, 0];
+            return gameFile;
         }
         return gameDir;
     });
@@ -147,7 +158,7 @@ function createWindow() {
     });
 
     ipcMain.handle('download-file', async (event, destination, url) => {
-        const filePath = path.join(__dirname, destination);
+        const filePath = path.join(appDataDir, destination);
         console.log(`Downloading ${url} to ${filePath}`);
         try {
             const writer = fs.createWriteStream(filePath);
@@ -178,7 +189,7 @@ function createWindow() {
     });
 
     ipcMain.handle('clone-repo', async (event, destination, url) => {
-        const filePath = path.join(__dirname, destination);
+        const filePath = path.join(appDataDir, destination);
         console.log(`Cloning ${url} to ${filePath}`);
         try {
             await git.clone(url, filePath, ["--depth", "1"]).then(() => {
@@ -215,7 +226,7 @@ function createWindow() {
         }
 
         return new Promise<string | null>((resolve, reject) => {
-            yauzl.open(gameFile, { lazyEntries: true }, (err, zipfile) => {
+            yauzl.open(gameFile[0], { lazyEntries: true }, (err, zipfile) => {
                 if (err) {
                     console.error(err);
                     return reject(err);
@@ -365,7 +376,7 @@ function findFileCaseInsensitive(filename: string): string | null {
     const cwd = process.cwd();
 
     try {
-        const files = fs.readdirSync(__dirname, { withFileTypes: true });
+        const files = fs.readdirSync(appDataDir, { withFileTypes: true });
         const file = files.find(file => file.name.toLowerCase() === filename.toLowerCase());
         const fileExists = files.some(file => file.name.toLowerCase() === filename.toLowerCase());
         if (file && fileExists) {

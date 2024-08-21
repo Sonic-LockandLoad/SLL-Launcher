@@ -48,6 +48,15 @@ footer {
     padding-bottom: 15px;
 }
 
+code {
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    padding: 2px 4px;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    background-color: #00000033;
+}
+
 .actions {
     width: 100%;
     box-sizing: border-box;
