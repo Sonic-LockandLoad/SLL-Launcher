@@ -47,11 +47,11 @@ function createWindow() {
     });
 
     ipcMain.handle('find-git', () => {
-        return findExecutable('git');
+        return findExecutable('git') || findExecutable('git.exe');
     });
 
     ipcMain.handle('find-engine', () => {
-        return findExecutable('gzdoom');
+        return findExecutable('gzdoom') || findExecutable('gzdoom.exe');
     });
 
     ipcMain.handle('find-iwad', () => {
@@ -361,14 +361,11 @@ ipcMain.on('close', (event) => {
 
 function findExecutable(name: string): string | null {
     const paths = process.env.PATH?.split(path.delimiter) || [];
-    const extensions = process.platform === 'win32' ? ['.exe', '.cmd', '.bat'] : [];
 
     for (const dir of paths) {
-        for (const ext of extensions) {
-            const fullPath = path.join(dir, name + ext);
-            if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
-                return fullPath;
-            }
+        const fullPath = path.join(dir, name);
+        if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+            return fullPath;
         }
     }
 
