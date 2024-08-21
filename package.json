@@ -1,7 +1,7 @@
 {
     "name": "sll-launcher",
     "version": "1.0.0",
-    "main": "index.js",
+    "main": "dist/main.js",
     "scripts": {
         "clean": "rm -r dist",
         "build": "tsc",
@@ -17,7 +17,20 @@
         "@types/node": "^22.4.0",
         "axios": "^1.7.4",
         "electron": "^31.4.0",
+        "electron-builder": "^24.13.3",
         "simple-git": "^3.25.0",
         "typescript": "^5.5.4"
+    },
+    "build": {
+        "appId": "io.aeriavelocity.sll-launcher",
+        "productName": "Sonic: Lock & Load Launcher",
+        "copyright": "Copyright © 2024 Arsalan 'Aeria' Kazmi",
+        "files": [
+            "dist/**/*",
+            "node_modules/"
+        ],
+        "directories": {
+            "output": "out"
+        }
     }
 }
