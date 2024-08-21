@@ -15,7 +15,7 @@
     "scripts": {
         "clean": "rimraf out dist || true",
         "compile": "tsc",
-        "copy": "copyfiles --verbose src/**/* dist",
+        "copy": "ncp src dist",
         "start": "electron dist/main.js",
         "build": "electron-builder"
     },
@@ -27,9 +27,9 @@
     "devDependencies": {
         "@types/electron": "^1.6.10",
         "@types/node": "^22.4.0",
-        "copyfiles": "^2.4.1",
         "electron": "^31.4.0",
         "electron-builder": "^24.13.3",
+        "ncp": "^2.0.0",
         "rimraf": "^6.0.1",
         "typescript": "^5.5.4"
     },
