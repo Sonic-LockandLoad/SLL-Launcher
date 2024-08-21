@@ -376,8 +376,6 @@ function findExecutable(name: string): string | null {
 }
 
 function findFileCaseInsensitive(filename: string): string | null {
-    const cwd = process.cwd();
-
     try {
         const files = fs.readdirSync(appDataDir, { withFileTypes: true });
         const file = files.find(file => file.name.toLowerCase() === filename.toLowerCase());
