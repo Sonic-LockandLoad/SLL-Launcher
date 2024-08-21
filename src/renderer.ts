@@ -202,19 +202,27 @@ async function setStatus() {
     const engineStatus = await checkForEngine();
     const iwadStatus = await checkForIWAD();
     const gameStatus = await checkForGameFiles();
-    const playButton = document.getElementById('play-game') as HTMLButtonElement;
+
     if (gitStatus && engineStatus && iwadStatus && gameStatus) {
         canPlayGame = true;
-        if (playButton) {
-            playButton.disabled = false;
-        }
     }
     else {
         canPlayGame = false;
-        if (playButton) {
-            playButton.disabled = true;
-        }
     }
+
+    const playButton = document.getElementById('play-game') as HTMLButtonElement;
+    const downloadButton1 = document.getElementById('downloadGameFiles') as HTMLButtonElement;
+    const downloadButton2 = document.getElementById('downloadGameFiles2') as HTMLButtonElement;
+
+    if (playButton) {
+        playButton.disabled = !canPlayGame;
+    }
+
+    if (downloadButton1 && downloadButton2) {
+        downloadButton1.disabled = isDownloading;
+        downloadButton2.disabled = isDownloading;
+    }
+
     await updateSummary();
 }
 
