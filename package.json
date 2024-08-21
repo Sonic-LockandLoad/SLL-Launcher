@@ -15,7 +15,7 @@
     "scripts": {
         "clean": "rimraf dist || true",
         "compile": "tsc",
-        "copy": "cpx \"src/**/*\" dist",
+        "copy": "copyfiles src/**/* dist",
         "start": "electron dist/main.js",
         "build": "electron-builder"
     },
@@ -23,7 +23,7 @@
         "@types/electron": "^1.6.10",
         "@types/node": "^22.4.0",
         "axios": "^1.7.4",
-        "cpx": "^1.5.0",
+        "copyfiles": "^2.4.1",
         "electron": "^31.4.0",
         "electron-builder": "^24.13.3",
         "rimraf": "^6.0.1",
