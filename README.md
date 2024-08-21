@@ -33,6 +33,15 @@ npm install
 npm start
 ```
 
+To build the launcher, run:
+
+```sh
+npx electron-builder
+```
+
+and the executable will be in the `out` directory. If you can't run `electron-builder`,
+run `npm install` first and try again.
+
 ## Licence
 
 This project is licensed under the GNU General Public License, either version 3
