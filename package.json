@@ -33,6 +33,15 @@
         ],
         "directories": {
             "output": "out"
+        },
+        "win": {
+            "target": "nsis"
+        },
+        "linux": {
+            "target": ["AppImage", "deb", "rpm"]
+        },
+        "mac": {
+            "target": "dmg"
         }
     }
 }
