@@ -40,7 +40,7 @@ jobs:
       if: runner.os == 'Linux'
       run: |
         sudo apt update
-        sudo apt install -y flatpak
+        sudo apt install -y flatpak flatpak-builder
 
     - name: Build Electron app
       run: npm run build
