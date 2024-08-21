@@ -4,12 +4,18 @@
     "author": "Arsalan 'Aeria' Kazmi",
     "version": "1.0.0",
     "main": "dist/main.js",
-    "keywords": ["game", "doom", "sonic", "fan game", "electron"],
+    "keywords": [
+        "game",
+        "doom",
+        "sonic",
+        "fan game",
+        "electron"
+    ],
     "license": "GPL-3.0-or-later",
     "scripts": {
-        "clean": "rm -r dist",
+        "clean": "rimraf dist",
         "compile": "tsc",
-        "copy": "cp -r ./src/* ./dist --verbose",
+        "copy": "cpx \"src/**/*\" dist",
         "start": "electron dist/main.js",
         "build": "electron-builder"
     },
@@ -17,8 +23,10 @@
         "@types/electron": "^1.6.10",
         "@types/node": "^22.4.0",
         "axios": "^1.7.4",
+        "cpx": "^1.5.0",
         "electron": "^31.4.0",
         "electron-builder": "^24.13.3",
+        "rimraf": "^6.0.1",
         "simple-git": "^3.25.0",
         "typescript": "^5.5.4",
         "yauzl": "^3.1.3"
@@ -38,7 +46,11 @@
             "target": "nsis"
         },
         "linux": {
-            "target": ["AppImage", "deb", "rpm"]
+            "target": [
+                "AppImage",
+                "deb",
+                "rpm"
+            ]
         },
         "mac": {
             "target": "dmg"
