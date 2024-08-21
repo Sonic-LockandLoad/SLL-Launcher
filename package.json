@@ -13,7 +13,7 @@
     ],
     "license": "GPL-3.0-or-later",
     "scripts": {
-        "clean": "rimraf dist",
+        "clean": "rimraf dist || true",
         "compile": "tsc",
         "copy": "cpx \"src/**/*\" dist",
         "start": "electron dist/main.js",
