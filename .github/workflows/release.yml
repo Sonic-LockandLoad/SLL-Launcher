@@ -47,6 +47,7 @@ jobs:
                   release_name: Release ${{ github.ref }}
                   draft: false
                   prerelease: false
+                  token: ${{ env.GH_TOKEN }}
 
             - name: Upload Linux release assets
               if: matrix.os == 'ubuntu-latest'
