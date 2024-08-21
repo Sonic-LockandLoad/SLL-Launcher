@@ -19,17 +19,19 @@
         "start": "electron dist/main.js",
         "build": "electron-builder"
     },
+    "dependencies": {
+        "axios": "^1.7.4",
+        "simple-git": "^3.25.0",
+        "yauzl": "^3.1.3"
+    },
     "devDependencies": {
         "@types/electron": "^1.6.10",
         "@types/node": "^22.4.0",
-        "axios": "^1.7.4",
         "copyfiles": "^2.4.1",
         "electron": "^31.4.0",
         "electron-builder": "^24.13.3",
         "rimraf": "^6.0.1",
-        "simple-git": "^3.25.0",
-        "typescript": "^5.5.4",
-        "yauzl": "^3.1.3"
+        "typescript": "^5.5.4"
     },
     "build": {
         "appId": "io.aeriavelocity.sll-launcher",
