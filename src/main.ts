@@ -186,7 +186,8 @@ function createWindow() {
     ipcMain.handle('launch-game', async () => {
         const gzdoomExecutable = findExecutable('gzdoom');
         const doom2iwad = findFileCaseInsensitive('doom2.wad') || findFileCaseInsensitive('freedoom2.wad');
-        const gameFile = findGamePK3() || findGameDir();
+        const game = findGamePK3() || findGameDir();
+        const gameFile = game[0].toString();
 
         if (gzdoomExecutable && doom2iwad && gameFile) {
             const execString = `${gzdoomExecutable} -iwad ${doom2iwad} -file ${gameFile}`;
