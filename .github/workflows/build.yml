@@ -36,6 +36,17 @@ jobs:
     - name: Copy source files
       run: npm run copy
 
+    - name: Install Flatpak (Ubuntu only)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt update
+        sudo apt install -y flatpak
+
+    - name: Install Flatpak SDK (Ubuntu only)
+      if: runner.os == 'Linux'
+      run: |
+        flatpak install -y flathub org.electron.electron
+
     - name: Build Electron app
       run: npm run build
 
