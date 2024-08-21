@@ -29,11 +29,8 @@ jobs:
 
     - name: Clean previous build
       run: |
-        if [ -d "out" ]; then
-          rm -rf out
-        fi
         if [ -d "dist" ]; then
-          rm -rf dist
+            npm run clean
         fi
 
     - name: Compile TypeScript
