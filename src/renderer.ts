@@ -47,14 +47,18 @@ async function checkForEngine(): Promise<boolean> {
             gzdoomStatus.innerHTML = '⛔ GZDoom not found';
         }
         if (summary) {
-            let pathAdvice = "You can add GZDoom to your PATH by specifying <code>export PATH=$PATH:gzdoomDir</code>, where <code>gzdoomDir</code> is the path to the folder that contains GZDoom in your shell config (usually <code>.bashrc</code> or <code>.zshrc</code>).";
             if (process.platform === 'win32') {
-                pathAdvice = "You can add GZDoom to your PATH by opening the Start Menu and typing 'path', selecting <strong>Edit environment variables for your account</strong>, selecting the entry named 'Path', clicking <kbd>Edit...</kbd> and typing the full path to the folder that contains GZDoom in a new field.";
+                summaryContents.push(`GZDoom was not found on your system. Please download GZDoom and place it inside <code>${appDataDir}</code>.`);
             }
             else if (process.platform === 'linux') {
-                pathAdvice = "GZDoom should have already been in your PATH if you installed it through the package manager. If you're using GZDoom on Flatpak, write a shell script to launch the Flatpak (<code>flatpak run org.gzdoom.GZDoom --command=gzdoom</code>) and add it to your PATH inside your shell config.";
+                summaryContents.push(`GZDoom was not found on your system. Please install GZDoom using your package manager or through Flatpak.`);
             }
-            summaryContents.push(`GZDoom was not found on your system on the PATH environment variable. Please install GZDoom yourself. If you have GZDoom, check to make sure it is in your PATH environment variable.<br> ${pathAdvice}`);
+            else if (process.platform === 'darwin') {
+                summaryContents.push(`GZDoom was not found on your system. Please download GZDoom and place it inside your Applications folder.`);
+            }
+            else {
+                summaryContents.push(`GZDoom was not found on your system. Please check to make sure you can run <code>gzdoom</code> from the command line.`);
+            }
         }
     }
 

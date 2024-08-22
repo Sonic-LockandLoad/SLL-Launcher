@@ -51,7 +51,7 @@ function createWindow() {
     });
 
     ipcMain.handle('find-engine', () => {
-        return findExecutable('gzdoom') || findExecutable('gzdoom.exe');
+        return findGZDoom();
     });
 
     ipcMain.handle('find-iwad', () => {
@@ -204,15 +204,21 @@ function createWindow() {
     });
 
     ipcMain.handle('launch-game', async () => {
-        const gzdoomExecutable = findExecutable('gzdoom');
+        const gzdoomExecutable = findGZDoom();
         const doom2iwad = findFileCaseInsensitive('doom2.wad') || findFileCaseInsensitive('freedoom2.wad');
         const game = findGamePK3() || findGameDir();
         const gameFile = game[0].toString();
 
         if (gzdoomExecutable && doom2iwad && gameFile) {
-            const execString = `${gzdoomExecutable} -iwad ${doom2iwad} -file ${gameFile}`;
-            console.log(`Running command \`${execString}\``);
-            spawn(gzdoomExecutable, ['-iwad', doom2iwad, '-file', `${gameFile}`]);
+            let execString = `${gzdoomExecutable} -iwad ${doom2iwad} -file ${gameFile}`;
+            if (gzdoomExecutable === "Flatpak") {
+                console.log('Running GZDoom from Flatpak');
+                spawn("flatpak", ["run", "org.zdoom.GZDoom", "-iwad", doom2iwad, "-file", `${gameFile}`]);
+            }
+            else {
+                console.log(`Running command \`${execString}\``);
+                spawn(gzdoomExecutable, ['-iwad', doom2iwad, '-file', `${gameFile}`]);
+            }
         }
         else {
             alert("You should never see this. If you see this, something has gone horribly wrong.");
@@ -365,6 +371,71 @@ function findExecutable(name: string): string | null {
     for (const dir of paths) {
         const fullPath = path.join(dir, name);
         if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+            return fullPath;
+        }
+    }
+
+    return null;
+}
+
+function findGZDoom(): string | null {
+    const gzdoomInPath: string | null = findExecutable('gzdoom') || findExecutable('gzdoom.exe');
+
+    if (!gzdoomInPath) {
+        try {
+            if (process.platform === 'win32') {
+                return searchInDirRecursively(appDataDir, 'gzdoom.exe');
+            }
+            else if (process.platform === 'darwin') {
+                const macGZDoom = searchInDir("/Applications", 'GZDoom.app') ||
+                                searchInDir(path.join(app.getPath('home'), "Applications"), 'GZDoom.app');
+                
+                if (macGZDoom) {
+                    return path.join(macGZDoom, 'Contents', 'MacOS', 'GZDoom');
+                }
+            }
+            else { // Assume it's Linux
+                const flatpakGZDoom = searchInDirRecursively("/var/lib/flatpak/app/", 'gzdoom');
+
+                if (flatpakGZDoom) {
+                    // Since Flatpak won't let us run it directly...
+                    return "Flatpak";
+                }
+
+                return searchInDirRecursively(appDataDir, 'gzdoom');
+            }
+        }
+        catch (err) {
+            console.error(err);
+        }
+    }
+
+    return gzdoomInPath;
+}
+
+function searchInDir(dir: string, filename: string): string | null {
+    const files = fs.readdirSync(dir, { withFileTypes: true });
+    console.log(`Searching ${dir} for ${filename}`);
+    for (const file of files) {
+        console.log(`Checking ${file.name}`);
+        if (file.name.toLowerCase() === filename.toLowerCase()) {
+            console.log(`Found ${file.name}`);
+            return path.join(dir, file.name);
+        }
+    }
+
+    return null;
+}
+
+function searchInDirRecursively(dir: string, filename: string): string | null {
+    const files = fs.readdirSync(dir, { withFileTypes: true });
+    for (const file of files) {
+        const fullPath = path.join(dir, file.name);
+        if (file.isDirectory()) {
+            const result = searchInDirRecursively(fullPath, filename);
+            if (result) return result;
+        }
+        else if (file.name.toLowerCase() === filename.toLowerCase()) {
             return fullPath;
         }
     }
