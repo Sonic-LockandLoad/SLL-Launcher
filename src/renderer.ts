@@ -51,7 +51,7 @@ async function checkForEngine(): Promise<boolean> {
                 summaryContents.push(`GZDoom was not found on your system. Please download GZDoom and place it inside <code>${appDataDir}</code>.`);
             }
             else if (process.platform === 'linux') {
-                summaryContents.push(`GZDoom was not found on your system. Please install GZDoom using your package manager or through Flatpak.`);
+                summaryContents.push(`GZDoom was not found on your system. Please install GZDoom using your package manager or <a href="#" onclick="shell.openPath('https://flathub.org/apps/org.zdoom.GZDoom')">install the Flatpak from Flathub</a>.`);
             }
             else if (process.platform === 'darwin') {
                 summaryContents.push(`GZDoom was not found on your system. Please download GZDoom and place it inside your Applications folder.`);
