@@ -36,7 +36,6 @@
     "build": {
         "appId": "io.aeriavelocity.sll-launcher",
         "productName": "Sonic Lock & Load Launcher",
-        "executableName": "Sonic-LockandLoad-Launcher",
         "copyright": "Copyright © 2024 Arsalan 'Aeria' Kazmi",
         "files": [
             "dist/**/*",
