@@ -10,7 +10,7 @@ const git: SimpleGit = simpleGit();
 
 function getAppDataDir(): string {
     try {
-        const executable = process.env.ARGV0 || app.getPath('exe');
+        const executable = process.env.ARGV0 || process.env.PORTABLE_EXECUTABLE_DIR || app.getPath('exe');
         let directory = path.dirname(executable);
 
         // On macOS, set it to the user's Application Support directory
