@@ -117,12 +117,11 @@ async function checkForIWAD(): Promise<boolean> {
             iwadStatus.innerHTML = '⛔ DOOM II-compatible IWAD (DOOM2.WAD/freedoom2.wad) not found';
         }
         if (summary) {
-            const freedoomDownloadLink = await ipcRenderer.invoke('get-freedoom-link');
             const configDir = await appDataDir;
             const configDirShort = configDir.replace(/\/home\/[^\/]+/, '~');
             console.log(`Executable dir: ${configDir}`);
             summaryContents.push(`DOOM II/Freedoom: Phase 2 was not found in the data folder. Please place your copy of <code>DOOM2.WAD</code> or <code>freedoom2.wad</code> in <code>${configDirShort}</code>. Click the "Open Data Folder" button below to open this folder.<br>
-                                  <a href="${freedoomDownloadLink}" download>Click here to get the latest version of Freedoom.</a>`);
+                                  <a href="#" onclick="require('electron').shell.openExternal('https://freedoom.github.io/download')">You can get Freedoom: Phase 1+2 from freedoom.github.io.</a> After your download, unzip the folder and place <code>freedoom2.wad</code> inside the data folder.`);
         }
     }
 
