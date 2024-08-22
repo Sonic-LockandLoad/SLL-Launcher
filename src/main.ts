@@ -18,7 +18,7 @@ function getAppDataDir(): string {
         // On macOS, set it to the user's Application Support directory
         if (process.platform === 'darwin') {
             const applicationSupport = path.join(app.getPath('home'), 'Library', 'Application Support');
-            directory = path.join(applicationSupport, 'SLL-Launcher');
+            directory = path.join(applicationSupport, 'SLL_Launcher-data');
         }
 
         // If running in a dev environment, set it to the dist folder
