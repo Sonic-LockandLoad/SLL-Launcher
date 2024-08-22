@@ -8,7 +8,7 @@ import yauzl from 'yauzl';
 
 const git: SimpleGit = simpleGit();
 
-const appDataDir = path.join(app.getPath('home'), 'SLL_Launcher');
+let appDataDir = path.join(process.env.ARGV0 || app.getPath('exe'), '../SLL_Launcher');
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -33,8 +33,13 @@ function createWindow() {
     });
 
     if (!fs.existsSync(appDataDir)) {
-        fs.mkdirSync(appDataDir);
-        console.log(`Config directory created at ${appDataDir}`);
+        try {
+            fs.mkdirSync(appDataDir);
+            console.log(`Config directory created at ${appDataDir}`);
+        }
+        catch (err) {
+            console.log(`Config directory creation failed: ${err}`);
+        }
     }
 
     ipcMain.handle('confirm-overwrite', async (event, message, labels) => {
