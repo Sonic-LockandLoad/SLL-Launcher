@@ -12,12 +12,19 @@ function getAppDataDir(): string {
     try {
         const executablePath = process.env.ARGV0 || app.getPath('exe');
         const execDirectory = path.dirname(executablePath);
-        const isDev = process.execPath.includes('electron');
 
         let directory = path.join(execDirectory, 'data');
 
+        // If running in a dev environment, set it to the dist folder
+        const isDev = process.execPath.includes('electron');
         if (isDev) {
             directory = path.join(__dirname, '..', 'dist', 'data');
+        }
+
+        // On macOS, set it to the user's Application Support directory
+        if (process.platform === 'darwin') {
+            const applicationSupport = path.join(app.getPath('home'), 'Library', 'Application Support');
+            directory = path.join(applicationSupport, 'SLL-Launcher');
         }
 
         return path.resolve(directory);
