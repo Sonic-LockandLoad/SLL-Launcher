@@ -51,14 +51,6 @@ function createWindow() {
 
     win.loadFile(path.join(__dirname, 'index.html'));
 
-    ipcMain.handle('log', (event, message) => {
-        console.log(message);
-    });
-
-    ipcMain.handle('get-root-path', () => {
-        return appDataDir;
-    });
-
     if (!fs.existsSync(appDataDir)) {
         const result = dialog.showMessageBoxSync({
             type: 'question',
@@ -80,6 +72,16 @@ function createWindow() {
             app.quit();
         }
     }
+}
+
+function setupHandlers() {
+    ipcMain.handle('log', (event, message) => {
+        console.log(message);
+    });
+
+    ipcMain.handle('get-root-path', () => {
+        return appDataDir;
+    });
 
     ipcMain.handle('confirm-overwrite', async (event, message, labels) => {
         return dialog.showMessageBoxSync({
@@ -342,6 +344,23 @@ function createWindow() {
         });
     }
 
+    async function parseVersionFromGameInfo(gameInfo: string): Promise<string | null> {
+        if (gameInfo.length > 0) {
+            // Extract the line that starts with "StartupTitle"
+            const title = gameInfo.split('\n').find(line => line.startsWith('StartupTitle'));
+            console.log("Found title: " + title);
+            if (title) {
+                const version = title.split('Sonic: Lock & Load ')[1].replace(/\\/g, '').slice(0, -2);
+                if (version) {
+                    console.log("Found version: " + version);
+                    return version;
+                }
+            }
+        }
+
+        return null;
+    }
+
     ipcMain.handle('get-game-version', async () => {
         const isPK3 = findGamePK3();
         const isDir = findGameDir();
@@ -363,30 +382,105 @@ function createWindow() {
     ipcMain.handle('get-engine-version', (event) => {
         return "g4.11.3"; // probably
     });
-}
 
+    function findExecutable(name: string): string | null {
+        const paths = process.env.PATH?.split(path.delimiter) || [];
 
-    async function parseVersionFromGameInfo(gameInfo: string): Promise<string | null> {
-        if (gameInfo.length > 0) {
-            // Extract the line that starts with "StartupTitle"
-            const title = gameInfo.split('\n').find(line => line.startsWith('StartupTitle'));
-            console.log("Found title: " + title);
-            if (title) {
-                const version = title.split('Sonic: Lock & Load ')[1].replace(/\\/g, '').slice(0, -2);
-                if (version) {
-                    console.log("Found version: " + version);
-                    return version;
-                }
+        for (const dir of paths) {
+            const fullPath = path.join(dir, name);
+            if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
+                return fullPath;
             }
         }
 
         return null;
     }
 
-let mainWindow: BrowserWindow | null = null;
+    function findGZDoom(): string | null {
+        const gzdoomInPath: string | null = findExecutable('gzdoom') || findExecutable('gzdoom.exe');
+
+        if (!gzdoomInPath) {
+            try {
+                if (process.platform === 'win32') {
+                    return searchInDirRecursively(appDataDir, 'gzdoom.exe');
+                }
+                else if (process.platform === 'darwin') {
+                    const macGZDoom = searchInDir("/Applications", 'GZDoom.app') ||
+                                    searchInDir(path.join(app.getPath('home'), "Applications"), 'GZDoom.app');
+                    
+                    if (macGZDoom) {
+                        return path.join(macGZDoom, 'Contents', 'MacOS', 'GZDoom');
+                    }
+                }
+                else { // Assume it's Linux
+                    const flatpakGZDoom = searchInDirRecursively("/var/lib/flatpak/app/", 'gzdoom');
+
+                    if (flatpakGZDoom) {
+                        // Since Flatpak won't let us run it directly...
+                        return "Flatpak";
+                    }
+
+                    return searchInDirRecursively(appDataDir, 'gzdoom');
+                }
+            }
+            catch (err) {
+                console.error(err);
+            }
+        }
+
+        return gzdoomInPath;
+    }
+
+    function searchInDir(dir: string, filename: string): string | null {
+        const files = fs.readdirSync(dir, { withFileTypes: true });
+        console.log(`Searching ${dir} for ${filename}`);
+        for (const file of files) {
+            console.log(`Checking ${file.name}`);
+            if (file.name.toLowerCase() === filename.toLowerCase()) {
+                console.log(`Found ${file.name}`);
+                return path.join(dir, file.name);
+            }
+        }
+
+        return null;
+    }
+
+    function searchInDirRecursively(dir: string, filename: string): string | null {
+        const files = fs.readdirSync(dir, { withFileTypes: true });
+        for (const file of files) {
+            const fullPath = path.join(dir, file.name);
+            if (file.isDirectory()) {
+                const result = searchInDirRecursively(fullPath, filename);
+                if (result) return result;
+            }
+            else if (file.name.toLowerCase() === filename.toLowerCase()) {
+                return fullPath;
+            }
+        }
+
+        return null;
+    }
+
+    function findFileCaseInsensitive(filename: string): string | null {
+        try {
+            const files = fs.readdirSync(appDataDir, { withFileTypes: true });
+            const file = files.find(file => file.name.toLowerCase() === filename.toLowerCase());
+            const fileExists = files.some(file => file.name.toLowerCase() === filename.toLowerCase());
+            if (file && fileExists) {
+                return file.name;
+            }
+        }
+        catch (err) {
+            return null;
+        }
+
+        return null;
+    }
+}
 
 app.whenReady().then(() => {
     createWindow();
+    setupHandlers();
 
     app.on('activate', () => {
         if (BrowserWindow.getAllWindows().length === 0) {
@@ -408,97 +502,3 @@ ipcMain.on('message', (event, message) => {
 ipcMain.on('close', (event) => {
     app.quit();
 });
-
-function findExecutable(name: string): string | null {
-    const paths = process.env.PATH?.split(path.delimiter) || [];
-
-    for (const dir of paths) {
-        const fullPath = path.join(dir, name);
-        if (fs.existsSync(fullPath) && fs.statSync(fullPath).isFile()) {
-            return fullPath;
-        }
-    }
-
-    return null;
-}
-
-function findGZDoom(): string | null {
-    const gzdoomInPath: string | null = findExecutable('gzdoom') || findExecutable('gzdoom.exe');
-
-    if (!gzdoomInPath) {
-        try {
-            if (process.platform === 'win32') {
-                return searchInDirRecursively(appDataDir, 'gzdoom.exe');
-            }
-            else if (process.platform === 'darwin') {
-                const macGZDoom = searchInDir("/Applications", 'GZDoom.app') ||
-                                searchInDir(path.join(app.getPath('home'), "Applications"), 'GZDoom.app');
-                
-                if (macGZDoom) {
-                    return path.join(macGZDoom, 'Contents', 'MacOS', 'GZDoom');
-                }
-            }
-            else { // Assume it's Linux
-                const flatpakGZDoom = searchInDirRecursively("/var/lib/flatpak/app/", 'gzdoom');
-
-                if (flatpakGZDoom) {
-                    // Since Flatpak won't let us run it directly...
-                    return "Flatpak";
-                }
-
-                return searchInDirRecursively(appDataDir, 'gzdoom');
-            }
-        }
-        catch (err) {
-            console.error(err);
-        }
-    }
-
-    return gzdoomInPath;
-}
-
-function searchInDir(dir: string, filename: string): string | null {
-    const files = fs.readdirSync(dir, { withFileTypes: true });
-    console.log(`Searching ${dir} for ${filename}`);
-    for (const file of files) {
-        console.log(`Checking ${file.name}`);
-        if (file.name.toLowerCase() === filename.toLowerCase()) {
-            console.log(`Found ${file.name}`);
-            return path.join(dir, file.name);
-        }
-    }
-
-    return null;
-}
-
-function searchInDirRecursively(dir: string, filename: string): string | null {
-    const files = fs.readdirSync(dir, { withFileTypes: true });
-    for (const file of files) {
-        const fullPath = path.join(dir, file.name);
-        if (file.isDirectory()) {
-            const result = searchInDirRecursively(fullPath, filename);
-            if (result) return result;
-        }
-        else if (file.name.toLowerCase() === filename.toLowerCase()) {
-            return fullPath;
-        }
-    }
-
-    return null;
-}
-
-function findFileCaseInsensitive(filename: string): string | null {
-    try {
-        const files = fs.readdirSync(appDataDir, { withFileTypes: true });
-        const file = files.find(file => file.name.toLowerCase() === filename.toLowerCase());
-        const fileExists = files.some(file => file.name.toLowerCase() === filename.toLowerCase());
-        if (file && fileExists) {
-            return file.name;
-        }
-    }
-    catch (err) {
-        return null;
-    }
-
-    return null;
-}
