@@ -3,12 +3,32 @@ import path from 'path';
 import fs, { ReadStream } from 'fs';
 import axios from 'axios';
 import simpleGit, { SimpleGit } from 'simple-git';
-import { spawn } from 'child_process';
+import { exec, spawn } from 'child_process';
 import yauzl from 'yauzl';
 
 const git: SimpleGit = simpleGit();
 
-let appDataDir = path.join(process.env.ARGV0 || app.getPath('exe'), '../SLL_Launcher');
+function getAppDataDir(): string {
+    try {
+        const executablePath = process.env.ARGV0 || app.getPath('exe');
+        const execDirectory = path.dirname(executablePath);
+        const isDev = process.execPath.includes('electron');
+
+        let directory = path.join(execDirectory, 'data');
+
+        if (isDev) {
+            directory = path.join(__dirname, '..', 'dist', 'data');
+        }
+
+        return path.resolve(directory);
+    }
+    catch (err) {
+        console.error(`Failed to get app data directory: ${err}`);
+        throw err;
+    }
+}
+
+const appDataDir = getAppDataDir();
 
 function createWindow() {
     const win = new BrowserWindow({
@@ -33,12 +53,24 @@ function createWindow() {
     });
 
     if (!fs.existsSync(appDataDir)) {
-        try {
-            fs.mkdirSync(appDataDir);
-            console.log(`Config directory created at ${appDataDir}`);
+        const result = dialog.showMessageBoxSync({
+            type: 'question',
+            title: 'Create App Data Directory?',
+            message: `Config directory at ${appDataDir} does not exist. Create it? Selecting "No" will exit the app.`,
+            buttons: ['Yes', 'No'],
+        });
+
+        if (result === 0) {
+            try {
+                fs.mkdirSync(appDataDir);
+                console.log(`Config directory created at ${appDataDir}`);
+            }
+            catch (err) {
+                console.log(`Config directory creation failed: ${err}`);
+            }
         }
-        catch (err) {
-            console.log(`Config directory creation failed: ${err}`);
+        else {
+            app.quit();
         }
     }
 
