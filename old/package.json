@@ -1,0 +1,56 @@
+{
+    "name": "sll-launcher",
+    "description": "Sonic: Lock & Load Launcher",
+    "author": "Arsalan 'Aeria' Kazmi",
+    "version": "1.1.0",
+    "main": "dist/main.js",
+    "keywords": [
+        "game",
+        "doom",
+        "sonic",
+        "fan game",
+        "tauri"
+    ],
+    "license": "GPL-3.0-or-later",
+    "scripts": {
+        "clean": "rimraf out dist || true",
+        "compile": "tsc",
+        "copy": "ncp src dist",
+        "start": "electron dist/main.js",
+        "build": "electron-builder"
+    },
+    "dependencies": {
+        "axios": "^1.7.4",
+        "simple-git": "^3.25.0",
+        "yauzl": "^3.1.3"
+    },
+    "devDependencies": {
+        "@tauri-apps/cli": "^1.6.0",
+        "@tauri-apps/api": "^1.6.0"
+    },
+    "build": {
+        "appId": "io.aeriavelocity.sll-launcher",
+        "productName": "Sonic Lock & Load Launcher",
+        "copyright": "Copyright © 2024 Arsalan 'Aeria' Kazmi",
+        "files": [
+            "dist/**/*",
+            "node_modules/"
+        ],
+        "directories": {
+            "output": "out"
+        },
+        "win": {
+            "target": "portable"
+        },
+        "linux": {
+            "target": "AppImage",
+            "category": "Game"
+        },
+        "mac": {
+            "target": {
+                "target": "dmg",
+                "arch": "universal"
+            }
+        }
+    }
+}

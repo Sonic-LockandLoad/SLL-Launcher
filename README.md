@@ -1,11 +1,24 @@
-# Sonic: Lock & Load Launcher
+# Sonic: Lock & Load Launcher (`tauri` branch)
 
-This is an Electron-based launcher for [Sonic: Lock & Load](https://sonic-lockandload.github.io).
+> [!CAUTION]
+> Sonic: Lock & Load Launcher is in the middle of being rewritten to use
+> [Tauri](https://tauri.app/). For the old Electron-based launcher, see
+> the [main branch](https://github.com/Sonic-LockandLoad/SLL-Launcher/tree/main).
+
+This is a Tauri-based launcher for [Sonic: Lock & Load](https://sonic-lockandload.github.io).
 
 This launcher is designed to facilitate easy installation of the game, the
 GZDoom engine, the DOOM II IWAD, user configuration, etc.
 
 ![Sonic: Lock & Load Launcher](screenshot.png)
+
+## Tauri Migration Checklist
+
++ [X] Create a Tauri app
++ [X] Move the old Electron-based launcher to an `old/` directory
++ [ ] Rewrite the features of `old/src/main.ts` into `/src-tauri/src/main.rs`
++ [ ] Port the `old/src/renderer.ts` to `/src/main.ts`
++ [ ] Move `old/src/index.html`, `old/src/style.css`, `old/src/fonts.css` and `old/src/fonts/` to `/src-tauri/`
 
 ## Features
 
@@ -20,28 +33,6 @@ or `git clone` (unstable).
 
 + Allow the user to change their Sonic: Lock & Load version
 + Supply default configurations for specific use cases
-
-## Installation
-
-There is no installation candidate ready yet.
-
-You can run the launcher from source:
-
-```sh
-git clone https://github.com/Sonic-LockandLoad/SLL-Launcher.git
-cd SLL-Launcher
-npm install
-npm start
-```
-
-To build the launcher, run:
-
-```sh
-npx electron-builder
-```
-
-and the executable will be in the `out` directory. If you can't run `electron-builder`,
-run `npm install` first and try again.
 
 ## Licence
 
