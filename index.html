@@ -1,43 +1,53 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="stylesheet" href="/src/styles.css" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
-    <script type="module" src="/src/main.ts" defer></script>
-  </head>
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="stylesheet" href="/src/style.css" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Sonic: Lock & Load</title>
+        <script type="module" src="/src/main.ts" defer></script>
+    </head>
 
-  <body>
-    <main class="container">
-      <h1>Welcome to Tauri</h1>
-
-      <div class="row">
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/src/assets/vite.svg" class="logo vite" alt="Vite logo" />
+    <body>
+        <a href="https://sonic-lockandload.github.io">
+            <img src="/src/assets/logo.png" id="logo"/>
         </a>
-        <a href="https://tauri.app" target="_blank">
-          <img
-            src="/src/assets/tauri.svg"
-            class="logo tauri"
-            alt="Tauri logo"
-          />
-        </a>
-        <a href="https://www.typescriptlang.org/docs" target="_blank">
-          <img
-            src="/src/assets/typescript.svg"
-            class="logo typescript"
-            alt="typescript logo"
-          />
-        </a>
-      </div>
-      <p>Click on the Tauri logo to learn more about the framework</p>
-
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-      <p id="greet-msg"></p>
-    </main>
-  </body>
+        <header>
+            <h1>Sonic: Lock &amp; Load Launcher</h1>
+            <hr id="separator">
+        </header>
+        <main>
+            <!-- Placeholder info - populate in JS/TS later -->
+            <div id="status">
+                <h2>Status</h2>
+                <ul id="status-list">
+                    <li id="git">⏱️ Pending Git executable location</li>
+                    <li id="gzdoom">⏱️ Pending GZDoom executable location</li>
+                    <li id="iwad">⏱️ Pending DOOM II: Hell on Earth IWAD location</li>
+                    <li id="gamefiles">⏱️ Pending Sonic: Lock &amp; Load game files installation</li>
+                </ul>
+                <p id="status-summary"></p>
+                <button id="status-refresh">Refresh Status</button>
+            </div>
+            <div id="manage">
+                <h2>Manage Game</h2>
+                <button id="downloadGameFiles">Download Sonic: Lock &amp; Load (latest)</button>
+                <button id="downloadGameFiles2">Download Sonic: Lock &amp; Load (unstable)</button>
+            </div>
+        </main>
+        <footer>
+            <hr id="separator">
+            <div class="actions">
+                <div id="left">
+                     <button id="open-folder">Open Data Folder</button>
+                </div>
+                <div id="centre">
+                    <button id="play-game">Play Sonic: Lock &amp; Load</button>
+                </div>
+                <div id="right">
+                    <strong>Game version:</strong> <span id="game-version"></span><br>
+                </div>
+            </div>
+        </footer>
+    </body>
 </html>
