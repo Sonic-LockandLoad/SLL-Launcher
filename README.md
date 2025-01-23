@@ -1,5 +1,8 @@
 # Sonic: Lock & Load Launcher
 
+> [!CAUTION]
+> This repository is **DEPRECATED** and will no longer be updated. For up-to-date versions of Sonic: Lock & Load and surrounding repositories, see the [Codeberg organisation.](https://codeberg.org/Sonic-LockandLoad)
+
 This is an Electron-based launcher for [Sonic: Lock & Load](https://sonic-lockandload.github.io).
 
 This launcher is designed to facilitate easy installation of the game, the
